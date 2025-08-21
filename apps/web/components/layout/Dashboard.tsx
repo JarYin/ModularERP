@@ -21,25 +21,28 @@ import {
   Palette,
   BellRing
 } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 
 // You can install lucide-react by running: npm install lucide-react
+export const menuItems = [
+    { icon: <LayoutDashboard size={20} />, name: "Dashboard", href: "/dashboard" },
+    { icon: <Users size={20} />, name: "CRM", href: "/dashboard/crm" },
+    { icon: <Briefcase size={20} />, name: "HR", href: "/dashboard/hr" },
+    { icon: <Package size={20} />, name: "Inventory", href: "/dashboard/inventory" },
+    { icon: <FileText size={20} />, name: "Accounting", href: "/dashboard/accounting" },
+    { icon: <Package size={20} />, name: "Modules", href: "/dashboard/modules" },
+    { icon: <CreditCard size={20} />, name: "Billing", href: "/dashboard/billing" },
+    { icon: <Building2 size={20} />, name: "Organization", href: "/dashboard/organization" },
+    { icon: <Settings size={20} />, name: "Settings", href: "/dashboard/settings" }
+  ];
 
 export const Sidebar = () => {
-  const menuItems = [
-    { icon: <LayoutDashboard size={20} />, name: 'Dashboard' },
-    { icon: <Users size={20} />, name: 'CRM' },
-    { icon: <Briefcase size={20} />, name: 'HR' },
-    { icon: <Package size={20} />, name: 'Inventory' },
-    { icon: <FileText size={20} />, name: 'Accounting' },
-    { icon: <Package size={20} />, name: 'Modules' },
-    { icon: <CreditCard size={20} />, name: 'Billing' },
-    { icon: <Building2 size={20} />, name: 'Organization' },
-    { icon: <Settings size={20} />, name: 'Settings', active: true },
-  ];
+  const pathname = usePathname();
 
   return (
     <aside className="flex flex-col h-screen bg-white text-gray-700 w-64 p-4 border-r border-gray-200 shrink-0">
-      {/* Logo and Title */}
+      {/* Logo */}
       <div className="flex items-center mb-10 shrink-0">
         <div className="bg-blue-600 p-2 rounded-lg">
           <Building size={24} className="text-white" />
@@ -47,40 +50,43 @@ export const Sidebar = () => {
         <h1 className="text-xl font-bold ml-3 text-gray-800">ModularERP</h1>
       </div>
 
-      {/* Navigation Menu */}
+      {/* Menu */}
       <nav className="flex-grow">
         <ul>
-          {menuItems.map((item, index) => (
-            <li key={index} className="mb-2">
-              <a
-                href="#"
-                className={`flex items-center p-3 rounded-lg transition-colors ${
-                  item.active
-                    ? 'bg-blue-600 text-white'
-                    : 'hover:bg-gray-100'
-                }`}
-              >
-                {item.icon}
-                <span className="ml-4 font-medium">{item.name}</span>
-              </a>
-            </li>
-          ))}
+          {menuItems.map((item, index) => {
+            const isActive = pathname === item.href;
+            return (
+              <li key={index} className="mb-2">
+                <a
+                  href={item.href}
+                  className={`flex items-center p-3 rounded-lg transition-colors ${
+                    isActive ? "bg-blue-600 text-white" : "hover:bg-gray-100"
+                  }`}
+                >
+                  {item.icon}
+                  <span className="ml-4 font-medium">{item.name}</span>
+                </a>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
-      {/* Organization/User Section */}
+      {/* Org/User */}
       <div className="mb-4 shrink-0">
         <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
-            <div className="flex items-center">
-                <FileText size={20} className="text-gray-500" />
-                <div className="ml-3">
-                    <p className="font-semibold text-sm text-gray-800">Acme Corp</p>
-                </div>
+          <div className="flex items-center">
+            <FileText size={20} className="text-gray-500" />
+            <div className="ml-3">
+              <p className="font-semibold text-sm text-gray-800">Acme Corp</p>
             </div>
-            <div className="flex items-center">
-                <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">Owner</span>
-                <ChevronDown size={16} className="ml-2 text-gray-400" />
-            </div>
+          </div>
+          <div className="flex items-center">
+            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
+              Owner
+            </span>
+            <ChevronDown size={16} className="ml-2 text-gray-400" />
+          </div>
         </div>
       </div>
 
@@ -98,14 +104,16 @@ export const Sidebar = () => {
   );
 };
 
-export const Navbar = () => {
+export const Navbar = ({ activeMenu }: { activeMenu: { icon: React.ReactNode; name: string; href: string } }) => {
     return (
         <header className="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-8 shrink-0">
             {/* Breadcrumbs */}
             <div className="flex items-center text-sm text-gray-500">
-                <a href="#" className="hover:text-gray-700">Dashboard</a>
+                <Link href={activeMenu?.href || "#"} className="flex items-center hover:text-gray-700">
+                    {activeMenu?.icon}
+                    <span className="ml-2">{activeMenu?.name}</span>
+                </Link>
                 <ChevronRight size={16} className="mx-2" />
-                <span className="font-medium text-gray-800">Settings</span>
             </div>
 
             {/* Search and User Actions */}
@@ -126,7 +134,6 @@ export const Navbar = () => {
                 </div>
                 <div className="h-8 w-8 rounded-full bg-gray-200 overflow-hidden">
                     {/* Placeholder for user avatar */}
-                    
                 </div>
             </div>
         </header>
