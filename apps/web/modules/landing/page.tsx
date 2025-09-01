@@ -1,3 +1,4 @@
+import Footer from './components/layout/Footer';
 import ModuleExample from './components/ModuleExample';
 
 export default function LandingPage() {
@@ -32,7 +33,17 @@ export default function LandingPage() {
       </main>
       <div>
         <ModuleExample />
+        <div className='bg-blue-600 text-center mt-5'>
+          <h1 className='font-bold text-white text-5xl pt-20'>Ready to Transform Your Business?</h1>
+          <p className='font-bold text-white text-xl mt-5'>Join thousands of businesses already using ModularERP to streamline</p>
+          <p className='font-bold text-white text-xl'>their operations.</p>
+          <div className='flex justify-center gap-2'>
+            <button className='mt-4 px-6 py-3 mb-20 bg-white text-blue-600 font-semibold rounded-lg shadow-md hover:bg-gray-100 transition duration-200 cursor-pointer'>Start Free Trial</button>
+            <button className='mt-4 px-6 py-3 mb-20 border border-white text-white font-semibold rounded-lg shadow-md hover:bg-gray-50 hover:text-black transition duration-200 cursor-pointer'>Schedule Demo</button>
+          </div>
+        </div>
       </div>
+      <Footer />
     </>
   );
 }
