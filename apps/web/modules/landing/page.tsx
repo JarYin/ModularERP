@@ -1,17 +1,19 @@
+import { useTranslations } from 'next-intl';
 import Footer from './components/layout/Footer';
 import ModuleExample from './components/ModuleExample';
 
 export default function LandingPage() {
+    const t = useTranslations("HomePage");
   return (
     <>
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-6xl font-bold">Streamline Your Business</h1>
+          <h1 className="text-6xl font-bold">{t("title.title-1")}</h1>
           <h1 className="text-6xl font-bold">
-            Operations with Our{' '}
-            <span className="font-bold text-blue-600">Modular</span>
+            {t("title.title-2")} {' '}
+            <span className="font-bold text-blue-600">{t("title.title-3")}</span>
           </h1>
-          <h1 className="text-6xl font-bold text-blue-600">ERP Solution</h1>
+          <h1 className="text-6xl font-bold text-blue-600">{t("title.title-4")}</h1>
 
           <p className="text-2xl mt-8 font-semibold text-gray-600/75 dark:text-gray-400/75">
             Flexible, scalable, and built for the future. Choose only the

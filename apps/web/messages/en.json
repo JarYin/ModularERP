@@ -1,5 +1,12 @@
 {
   "HomePage": {
-    "title": "Hello world!"
-  }
+    "title": {
+      "title-1": "Streamline Your Business",
+      "title-2": "Operations with Our",
+      "title-3": "Modular",
+      "title-4": "ERP Solution"
+    }
+  },
+  "Navbar": { "home": "Home" },
+  "LandingPage": { "welcome": "Welcome!" }
 }

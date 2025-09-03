@@ -1,5 +1,12 @@
 {
   "HomePage": {
-    "title": "สวัสดีชาวโลก!"
-  }
+    "title": {
+      "title-1": "ปรับปรุงธุรกิจของคุณให้มีประสิทธิภาพ",
+      "title-2": "ด้วยระบบ",
+      "title-3": "Modular",
+      "title-4": "ERP Solution"
+    }
+  },
+  "Navbar": { "home": "หน้าแรก" },
+  "LandingPage": { "welcome": "ยินดีต้อนรับ!" }
 }

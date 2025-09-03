@@ -1,6 +1,7 @@
-"use client";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+'use client';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import LanguageToggle from '@/components/ui/languageToggle';
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -9,14 +10,14 @@ export default function Navbar() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/70 backdrop-blur-md shadow-sm" : "bg-white"
+        scrolled ? 'bg-white/70 backdrop-blur-md shadow-sm' : 'bg-white'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
@@ -52,6 +53,7 @@ export default function Navbar() {
           >
             Get Started
           </Link>
+          <LanguageToggle />
         </div>
       </div>
     </nav>
