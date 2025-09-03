@@ -4,7 +4,43 @@
       "title-1": "Streamline Your Business",
       "title-2": "Operations with Our",
       "title-3": "Modular",
-      "title-4": "ERP Solution"
+      "title-4": "ERP Solution",
+      "title-5": "Everything You Need to Run Your Business"
+    },
+    "description": {
+      "desc-1": "Flexible, scalable, and built for the future. Choose only the modules you need",
+      "desc-2": "and scale as you grow.",
+      "desc-3": "Unlock new efficiencies with our tailored modules designed for your unique needs.",
+      "CRM": {
+        "desc-1": "Manage customer relationships and track sales",
+        "desc-2": "pipeline with powerful automation tools."
+      },
+      "InventoryManagement": {
+        "desc-1": "Real-time inventory tracking with automated",
+        "desc-2": "reordering and warehouse management."
+      },
+      "HR&Payroll": {
+        "desc-1": "Complete human resources management with",
+        "desc-2": "payroll, benefits, and performance tracking."
+      },
+      "Accounting&Finance": {
+        "desc-1": "Full accounting suite with invoicing, expense",
+        "desc-2": "tracking, and financial reporting."
+      },
+      "PointOfSale": {
+        "desc-1": "Modern POS system with multi-location support",
+        "desc-2": "and integrated payment processing."
+      },
+      "Analytics&Reporting": {
+        "desc-1": "Advanced business intelligence with customizable",
+        "desc-2": "dashboards and real-time insights."
+      },
+      "desc-4": "Are you ready to transform your business?",
+      "desc-5": "Join the ModularERP to revolutionize your business management at every step."
+    },
+    "button": {
+      "title-1": "Explore Our Module Marketplace",
+      "title-2": "Start Free Trial"
     }
   },
   "Navbar": { "home": "Home" },

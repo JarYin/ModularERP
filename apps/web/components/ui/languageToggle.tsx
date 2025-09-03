@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from './button';
-    
+
 export default function LanguageToggle() {
   const router = useRouter();
   const [locale, setLocale] = useState<string>('');
@@ -35,6 +35,6 @@ export default function LanguageToggle() {
   };
 
   return (
-    <Button onClick={toggleLanguage}>{locale === 'th' ? 'TH' : 'EN'}</Button>
+    <Button className='bg-slate-700 cursor-pointer' onClick={toggleLanguage}>{locale === 'th' ? 'TH' : 'EN'}</Button>
   );
 }
