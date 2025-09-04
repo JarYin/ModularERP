@@ -1,19 +1,26 @@
-import { Injectable } from "@nestjs/common";
-import { PassportStrategy } from "@nestjs/passport";
-import {ExtractJwt, Strategy} from 'passport-jwt'
+// src/auth/jwt.strategy.ts
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor() {
-        super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            ignoreExpiration: false,
-            // eslint-disable-next-line turbo/no-undeclared-env-vars
-            secretOrKey: process.env.JWT_SECRET,
-        })
-    }
+  constructor(private readonly configService: ConfigService) {
+    super({
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ignoreExpiration: false,
+      secretOrKey: configService.get<string>('SUPABASE_JWT_SECRET'),
+    });
+  }
 
-    async validate(payload: {sub: string, email: string}) {
-        return { userId: payload.sub, email: payload.email };
+  // Method นี้จะถูกเรียกหลังจาก Token ผ่านการตรวจสอบ Signature แล้ว
+  async validate(payload: any) {
+    // payload คือข้อมูลที่ถอดรหัสจาก JWT
+    // Supabase จะใส่ข้อมูล user ไว้ในนี้ เช่น sub (user_id), email
+    if (!payload.sub) {
+        throw new UnauthorizedException();
     }
+    return { userId: payload.sub, email: payload.email }; // ข้อมูลนี้จะถูกใส่ไปใน request.user
+  }
 }

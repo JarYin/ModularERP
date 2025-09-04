@@ -1,38 +1,34 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
-
-type AuthInput = { email: string, password: string };
-type SignInData = { userId: number, email: string };
-type AuthToken = { accessToken: string, userId: number, email: string };
+// src/auth/auth.service.ts
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService, private jwtService: JwtService) {}
+  constructor(private readonly supabaseService: SupabaseService) {}
 
-    async authenticate(input: AuthInput): Promise<AuthToken> {
-        const user = await this.validateUser(input);
-        if(!user) {
-            throw new UnauthorizedException()
-        }
-        return this.signIn(user);
+  async signUp(email: string, password: string) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new BadRequestException(error.message);
     }
+    return data;
+  }
 
-    async validateUser(input: AuthInput): Promise<SignInData | null> {
-        const user = await this.usersService.findByEmail(input.email);
-        if (user && user.password === input.password) {
-            return { userId: user.userId, email: user.email };
-        }
-        return null;
+  async signIn(email: string, password: string) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new UnauthorizedException(error.message);
     }
-
-    async signIn(user: SignInData): Promise<AuthToken> {
-        const tokenPayload = {
-            sub: user.userId,
-            email: user.email
-        }
-
-        const accessToken = await this.jwtService.signAsync(tokenPayload);
-        return { accessToken, userId: user.userId, email: user.email };
-    }
+    return data;
+  }
 }

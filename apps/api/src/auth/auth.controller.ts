@@ -1,14 +1,18 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+// src/auth/auth.controller.ts
+import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
-    @HttpCode(HttpStatus.OK)
-    @Post('login')
-    login(@Body() input: { email: string, password: string }) {
-        return this.authService.authenticate(input);
-    }
+  @Post('signup')
+  async signUp(@Body() body: { email: string; password: string }) {
+    return this.authService.signUp(body.email, body.password);
+  }
 
+  @Post('signin')
+  async signIn(@Body() body: { email: string; password: string }) {
+    return this.authService.signIn(body.email, body.password);
+  }
 }

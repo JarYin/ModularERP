@@ -11,8 +11,8 @@ export class PassportAuthController {
     @Post('login')
     @UseGuards(PassportLocalGuard)
     login(@Request() request: { user: { userId: number, email: string, password: string } }) {
-        const { userId, email } = request.user;
-        return this.authService.signIn({ userId, email });
+        const { email, password } = request.user;
+        return this.authService.signIn(email, password);
     }
 
     @Get('me')

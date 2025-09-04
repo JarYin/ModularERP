@@ -43,6 +43,32 @@
       "title-2": "Start Free Trial"
     }
   },
-  "Navbar": { "home": "Home" },
-  "LandingPage": { "welcome": "Welcome!" }
+  "Navbar": {
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
+  "LandingPage": { "welcome": "Welcome!" },
+  "SignIn": {
+    "title": "Welcome back",
+    "subtitle": {
+      "sub-1": "Sign in to your account to continue",
+      "sub-2": "Or continue with email",
+      "sub-3": "Don't have an account?",
+      "sub-4": "Sign up"
+    },
+    "InputForm": {
+      "email": "Email address",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "rememberMe": "Remember me",
+      "placeholder": {
+        "email": "Enter your email",
+        "password": "Enter your password"
+      }
+    },
+    "button": {
+      "button-1": "Continue with Google",
+      "button-2": "Sign In"
+    }
+  }
 }
