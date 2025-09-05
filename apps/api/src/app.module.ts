@@ -9,11 +9,12 @@ import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { SupabaseService } from './supabase/supabase.service';
 import { SupabaseModule } from './supabase/supabase.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [LinksModule, AuthModule, ConfigModule.forRoot({
     isGlobal: true,
-  }), UsersModule, SupabaseModule],
+  }), UsersModule, SupabaseModule, ProfileModule],
   controllers: [AppController],
   providers: [AppService, SupabaseService],
 })

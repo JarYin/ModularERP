@@ -23,6 +23,9 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 // You can install lucide-react by running: npm install lucide-react
 export const menuItems = [
@@ -38,6 +41,10 @@ export const menuItems = [
   ];
 
 export const Sidebar = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
   const pathname = usePathname();
 
   return (
@@ -97,7 +104,7 @@ export const Sidebar = () => {
           className="flex items-center p-3 rounded-lg hover:bg-gray-100 transition-colors"
         >
           <LogOut size={20} className="text-gray-500" />
-          <span className="ml-4 font-medium text-gray-600">Logout</span>
+          <button onClick={handleLogout} className="ml-4 font-medium text-gray-600">Logout</button>
         </a>
       </div>
     </aside>
