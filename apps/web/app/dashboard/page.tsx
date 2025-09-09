@@ -1,7 +1,6 @@
 'use client';
 
 import { supabase } from '@/lib/supabaseClient';
-
 import { useEffect, useState } from 'react';
 
 export default function Dashboard() {
@@ -13,9 +12,11 @@ export default function Dashboard() {
         data: { session },
       } = await supabase.auth.getSession();
 
+      if (!session?.access_token) return;
+
       const res = await fetch('http://localhost:5000/profile', {
         headers: {
-          Authorization: `Bearer ${session?.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
       });
 
@@ -24,7 +25,6 @@ export default function Dashboard() {
         jsonData = await res.json();
       }
       setData(jsonData);
-      console.log(session?.access_token);
     };
 
     fetchData();

@@ -14,6 +14,7 @@ export class AuthService {
     });
 
     if (error) {
+      console.error("Supabase error:", error);  
       throw new BadRequestException(error.message);
     }
     return data;

@@ -1,3 +1,5 @@
-export default function SignUp() {
-  return <div className="bg-gray-50"></div>;
+import SignUp from "@/modules/auth/components/SignUp";
+
+export default function SignUpPage() {
+  return <SignUp />
 }

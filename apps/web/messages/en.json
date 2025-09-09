@@ -50,11 +50,14 @@
   "LandingPage": { "welcome": "Welcome!" },
   "SignIn": {
     "title": "Welcome back",
+    "title-signup": "Create your account",
     "subtitle": {
       "sub-1": "Sign in to your account to continue",
       "sub-2": "Or continue with email",
       "sub-3": "Don't have an account?",
-      "sub-4": "Sign up"
+      "sub-4": "Sign up",
+      "sub-5": "Sign In",
+      "sub-6": "Already have an account?"
     },
     "InputForm": {
       "email": "Email address",
@@ -64,11 +67,13 @@
       "placeholder": {
         "email": "Enter your email",
         "password": "Enter your password"
-      }
+      },
+      "confirmPassword": "Confirm Password"
     },
     "button": {
       "button-1": "Continue with Google",
-      "button-2": "Sign In"
+      "button-2": "Sign In",
+      "button-3": "Sign Up"
     }
   }
 }

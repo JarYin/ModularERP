@@ -1,43 +1,40 @@
 'use client';
-
 import { Separator } from '@/components/ui/separator';
-import SignInButton from '@/modules/auth/components/SignInButtonGoogle';
-import { useTranslations } from 'next-intl';
-import Image from 'next/image';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signInSchema, SignInData } from '../validation';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import SignInButton from './SignInButtonGoogle';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { SignUpData, signUpSchema } from '../validation';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { signupUser } from '../api/signup';
+import { redirect } from 'next/navigation';
+import { useState } from 'react';
 
-export default function SignIn() {
+export default function SignUp() {
+    const [loading, setLoading] = useState(false);
   const t = useTranslations('SignIn');
-  const router = useRouter();
-
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInData>({
-    resolver: zodResolver(signInSchema),
+  } = useForm<SignUpData>({
+    resolver: zodResolver(signUpSchema),
   });
 
-  async function onSubmit(data: SignInData) {
+  const onSubmit = async (data: SignUpData) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+        setLoading(true);
+      const response = await signupUser(data.email, data.password);
       if (response) {
-        router.push('/dashboard');
+        setLoading(false);
+        redirect('/signin');
       }
     } catch (error) {
-      console.error('Sign-in error:', error);
+      console.error('Sign-up error:', error);
+      setLoading(false);
     }
-  }
+  };
   return (
     <div className="bg-gray-50 h-screen w-full">
       <div className="flex flex-col items-center justify-center h-full">
@@ -54,10 +51,9 @@ export default function SignIn() {
           </h1>
         </div>
         <div className="bg-white p-8 rounded shadow-md min-w-2xl">
-          <h1 className="text-center text-3xl font-bold">{t('title')}</h1>
-          <p className="text-center font-semibold text-gray-500">
-            {t('subtitle.sub-1')}
-          </p>
+          <h1 className="text-center text-3xl font-bold">
+            {t('title-signup')}
+          </h1>
           <SignInButton />
           <div className="relative mt-4 mb-4">
             <div className="absolute inset-0 flex items-center">
@@ -92,16 +88,26 @@ export default function SignIn() {
                 {errors.password.message}
               </p>
             )}
+
+            <div>
+              <label htmlFor="confirmPassword">
+                {t('InputForm.confirmPassword')}
+              </label>
+              <input
+                type="password"
+                {...register('confirmPassword')}
+                placeholder={t('InputForm.confirmPassword')}
+                className="border p-2 w-full rounded"
+              />
+              {errors.confirmPassword && (
+                <p className="text-red-500 w-full mb-4">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
+
             <div className="flex items-center justify-between mb-4">
-              <div>
-                <input
-                  type="checkbox"
-                  {...register('rememberMe')}
-                  id="remember"
-                  className="mr-2 cursor-pointer"
-                />
-                <label htmlFor="remember">{t('InputForm.rememberMe')}</label>
-              </div>
+              <div></div>
               <div>
                 <a href="#" className="text-blue-500">
                   {t('InputForm.forgotPassword')}
@@ -110,15 +116,16 @@ export default function SignIn() {
             </div>
             <button
               type="submit"
+              aria-disabled={loading}
               className="bg-blue-500 text-white p-2 w-full hover:bg-blue-600 rounded font-semibold cursor-pointer"
             >
-              {t('button.button-2')}
+              {t('button.button-3')}
             </button>
 
             <p className="text-center">
-              {t('subtitle.sub-3')}{' '}
-              <Link href="/signup" className="text-blue-500">
-                {t('subtitle.sub-4')}
+              {t('subtitle.sub-6')}{' '}
+              <Link href="/signin" className="text-blue-500">
+                {t('subtitle.sub-5')}
               </Link>
             </p>
           </form>
