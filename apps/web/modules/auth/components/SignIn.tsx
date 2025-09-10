@@ -10,6 +10,7 @@ import { signInSchema, SignInData } from '../validation';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
+import { createSession } from '@/lib/session';
 
 export default function SignIn() {
   const t = useTranslations('SignIn');
@@ -38,6 +39,14 @@ export default function SignIn() {
         },
       );
       if (response) {
+         const result = await response.json();
+         console.log("Sign-in result:", result);
+        await createSession({
+            user: {
+                id: result.id,
+                email: result.email,
+            }
+        });
         router.push('/dashboard');
       }
     } catch (error) {
