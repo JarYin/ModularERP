@@ -9,10 +9,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { signInSchema, SignInData } from '../validation';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useState } from 'react';
 
 export default function SignIn() {
   const t = useTranslations('SignIn');
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -24,18 +26,24 @@ export default function SignIn() {
 
   async function onSubmit(data: SignInData) {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      setLoading(true);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
         },
-        body: JSON.stringify(data),
-      });
+      );
       if (response) {
         router.push('/dashboard');
       }
     } catch (error) {
       console.error('Sign-in error:', error);
+    } finally {
+      setLoading(false);
     }
   }
   return (
@@ -110,9 +118,35 @@ export default function SignIn() {
             </div>
             <button
               type="submit"
-              className="bg-blue-500 text-white p-2 w-full hover:bg-blue-600 rounded font-semibold cursor-pointer"
+              disabled={loading}
+              className="bg-blue-500 text-white p-2 w-full flex justify-center hover:bg-blue-600 rounded font-semibold cursor-pointer"
             >
-              {t('button.button-2')}
+              {loading ? (
+                <>
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    ></path>
+                  </svg>
+                </>
+              ) : (
+                t('button.button-2')
+              )}
             </button>
 
             <p className="text-center">
