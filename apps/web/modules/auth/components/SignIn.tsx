@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
 import { createSession } from '@/lib/session';
+import { signinUser } from '../api/signin';
 
 export default function SignIn() {
   const t = useTranslations('SignIn');
@@ -25,36 +26,24 @@ export default function SignIn() {
     resolver: zodResolver(signInSchema),
   });
 
-  async function onSubmit(data: SignInData) {
-    try {
-      setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
-        },
-      );
-      if (response) {
-         const result = await response.json();
-         console.log("Sign-in result:", result);
-        await createSession({
-            user: {
-                id: result.id,
-                email: result.email,
-            }
-        });
-        router.push('/dashboard');
-      }
-    } catch (error) {
-      console.error('Sign-in error:', error);
-    } finally {
-      setLoading(false);
-    }
+  const onSubmit = async (data: SignInData) => {
+  try {
+    setLoading(true)
+    const { access_token, user } = await signinUser(data.email, data.password);
+
+    await createSession({
+      user: { id: user.id, email: user.email },
+      accessToken: access_token,
+    });
+
+    router.push("/dashboard");
+  } catch (error) {
+    console.error("Sign-in error:", error);
+  }finally {
+    setLoading(false)
   }
+};
+
   return (
     <div className="bg-gray-50 h-screen w-full">
       <div className="flex flex-col items-center justify-center h-full">

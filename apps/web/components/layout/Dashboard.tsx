@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { destroySession } from '@/lib/session';
 
 // You can install lucide-react by running: npm install lucide-react
 export const menuItems = [
@@ -66,6 +67,7 @@ export const menuItems = [
 export const Sidebar = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    await destroySession();
     window.location.href = '/';
   };
   const pathname = usePathname();

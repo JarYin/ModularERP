@@ -8,7 +8,8 @@ export type Session = {
     user: {
         id: string;
         email: string;
-    }
+    },
+    accessToken?: string;
 }
 
 const secretKey = process.env.SESSION_SECRET_KEY!;
@@ -41,4 +42,14 @@ export async function getSession() {
         console.log("Failed to verify session", err);
         redirect("/signin");
     }
+}
+
+export async function destroySession() {
+  (await cookies()).set("session", "", {
+    httpOnly: true,
+    secure: true,
+    expires: new Date(0),
+    sameSite: "lax",
+    path: "/",
+  });
 }
