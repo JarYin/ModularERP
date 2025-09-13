@@ -21,21 +21,41 @@ export class AuthService {
   }
 
   async signIn(email: string, password: string) {
-  const supabase = this.supabaseService.getClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (error) {
-    throw new UnauthorizedException(error.message);
+    if (error) {
+      throw new UnauthorizedException(error.message);
+    }
+
+    return {
+      access_token: data.session?.access_token,
+      refresh_token: data.session?.refresh_token,
+      user: data.user,
+    };
   }
 
-  return {
-    access_token: data.session?.access_token,
-    refresh_token: data.session?.refresh_token,
-    user: data.user,
-  };
-}
+  async forgotPassword(email: string) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: "http://localhost:3000/reset-password", // หน้าที่จะให้ user กรอกรหัสผ่านใหม่
+    });
+
+    if (error) throw error;
+    return { message: "Reset password email sent" };
+  }
+
+  async resetPassword(newPassword: string) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.updateUser({
+      password: newPassword,
+    })
+
+    if (error) throw error;
+    return { message: "Password updated successfully" };
+  }
 
 }

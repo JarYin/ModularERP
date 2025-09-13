@@ -12,6 +12,8 @@ export default function Dashboard() {
 
     if (!session?.accessToken) return;
 
+    console.log(session)
+
     const res = await fetch("http://localhost:5000/profile", {
       headers: {
         Authorization: `Bearer ${session.accessToken}`,

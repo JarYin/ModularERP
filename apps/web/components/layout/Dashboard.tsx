@@ -23,9 +23,8 @@ import {
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { destroySession } from '@/lib/session';
+import Image from 'next/image';
 
 // You can install lucide-react by running: npm install lucide-react
 export const menuItems = [
@@ -176,6 +175,7 @@ export const Navbar = ({
         </div>
         <div className="h-8 w-8 rounded-full bg-gray-200 overflow-hidden">
           {/* Placeholder for user avatar */}
+          <Image src={"/avatar-anonymous.jpg"} width={150} height={150} alt='avatar' />
         </div>
       </div>
     </header>

@@ -15,17 +15,24 @@ export type Session = {
 const secretKey = process.env.SESSION_SECRET_KEY!;
 const encodedKey = new TextEncoder().encode(secretKey);
 
-export async function createSession(payload: Session) {
-    const expiredAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
-    const session = await new SignJWT(payload).setProtectedHeader({ alg: "HS256" }).setIssuedAt().setExpirationTime("7d").sign(encodedKey)
+export async function createSession(payload: Session, rememberMe = false) {
+  const expiredAt = rememberMe
+    ? new Date(Date.now() + 1000 * 60 * 60 * 24 * 30) // 30 วัน
+    : undefined; // หมดอายุเมื่อปิดเบราว์เซอร์
 
-        ; (await cookies()).set("session", session, {
-            httpOnly: true,
-            secure: true,
-            expires: expiredAt,
-            sameSite: "lax",
-            path: "/",
-        })
+  const session = await new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime(rememberMe ? "30d" : "1d") // JWT หมดอายุ
+    .sign(encodedKey);
+
+  (await cookies()).set("session", session, {
+    httpOnly: true,
+    secure: true,
+    expires: expiredAt, // undefined = session cookie
+    sameSite: "lax",
+    path: "/",
+  });
 }
 
 export async function getSession() {

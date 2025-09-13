@@ -27,22 +27,28 @@ export default function SignIn() {
   });
 
   const onSubmit = async (data: SignInData) => {
-  try {
-    setLoading(true)
-    const { access_token, user } = await signinUser(data.email, data.password);
+    try {
+      setLoading(true);
+      const { access_token, user } = await signinUser(
+        data.email,
+        data.password,
+      );
 
-    await createSession({
-      user: { id: user.id, email: user.email },
-      accessToken: access_token,
-    });
+      await createSession(
+        {
+          user: { id: user.id, email: user.email },
+          accessToken: access_token,
+        },
+        data.rememberMe,
+      );
 
-    router.push("/dashboard");
-  } catch (error) {
-    console.error("Sign-in error:", error);
-  }finally {
-    setLoading(false)
-  }
-};
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Sign-in error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="bg-gray-50 h-screen w-full">
@@ -109,9 +115,9 @@ export default function SignIn() {
                 <label htmlFor="remember">{t('InputForm.rememberMe')}</label>
               </div>
               <div>
-                <a href="#" className="text-blue-500">
+                <Link href="/signin/forgotPassword" className="text-blue-500">
                   {t('InputForm.forgotPassword')}
-                </a>
+                </Link>
               </div>
             </div>
             <button
