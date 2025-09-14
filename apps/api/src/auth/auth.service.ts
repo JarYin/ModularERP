@@ -41,11 +41,12 @@ export class AuthService {
   async forgotPassword(email: string) {
     const supabase = this.supabaseService.getClient();
     const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:3000/reset-password", // หน้าที่จะให้ user กรอกรหัสผ่านใหม่
+      // eslint-disable-next-line turbo/no-undeclared-env-vars
+      redirectTo: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/signin/resetPassword`,
     });
 
     if (error) throw error;
-    return { message: "Reset password email sent" };
+    return { message: "Reset password email sent", data: data };
   }
 
   async resetPassword(newPassword: string) {

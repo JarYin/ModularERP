@@ -18,3 +18,15 @@ export const signUpSchema = z.object({
 });
 
 export type SignUpData = z.infer<typeof signUpSchema>;
+
+export const ResetSchema = z
+  .object({
+    password: z.string().min(8, "Password must be at least 8 characters"),
+    confirm: z.string().min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.password === data.confirm, {
+    message: "Passwords do not match",
+    path: ["confirm"],
+  });
+
+export type ResetForm = z.infer<typeof ResetSchema>;

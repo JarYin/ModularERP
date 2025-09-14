@@ -44,7 +44,7 @@ export default function ForgotPasswordForm() {
     setMessage(null);
 
     try {
-      const res = await fetch('/api/forgot-password', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: data.email.trim() }),

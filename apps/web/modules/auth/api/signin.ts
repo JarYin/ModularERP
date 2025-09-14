@@ -6,5 +6,5 @@ export async function signinUser(email: string, password: string) {
   });
 
   if (!res.ok) throw new Error("Signin failed");
-  return res.json(); // ได้ token + user กลับมา
+  return res.json();
 }
