@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Lock, CheckCircle } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 
 // shadcn/ui imports
 import {
@@ -19,8 +19,6 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { ResetForm, ResetSchema } from '../validation';
-import { resetPasswordUser } from '../api/resetPasswordUser';
-
 
 export default function ResetPasswordPage() {
   const [status, setStatus] = useState<
@@ -30,8 +28,28 @@ export default function ResetPasswordPage() {
     | { type: 'error'; message: string }
   >({ type: 'idle' });
 
-  const searchParams = useSearchParams();
-  const token = searchParams.get('token');
+  const [sessionReady, setSessionReady] = useState(false);
+
+  // ✅ parse token จาก hash fragment
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const access_token = hashParams.get('access_token');
+    const refresh_token = hashParams.get('refresh_token');
+    const type = hashParams.get('type');
+
+    if (type === 'recovery' && access_token && refresh_token) {
+      supabase.auth
+        .setSession({ access_token, refresh_token })
+        .then(({ error }) => {
+          if (error) {
+            console.error('Error setting session:', error);
+            setStatus({ type: 'error', message: error.message });
+          } else {
+            setSessionReady(true);
+          }
+        });
+    }
+  }, []);
 
   const {
     register,
@@ -44,20 +62,15 @@ export default function ResetPasswordPage() {
   });
 
   async function onSubmit(values: ResetForm) {
-    if (!token) {
-      setStatus({ type: 'error', message: 'Invalid or missing reset token' });
-      return;
-    }
-
     try {
       setStatus({ type: 'loading' });
 
-      const res = await resetPasswordUser(token, values);
+      const { error } = await supabase.auth.updateUser({
+        password: values.password,
+      });
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const message = body?.message || 'Unable to reset password';
-        setStatus({ type: 'error', message });
+      if (error) {
+        setStatus({ type: 'error', message: error.message });
         return;
       }
 
@@ -177,7 +190,9 @@ export default function ResetPasswordPage() {
               <div className="flex items-center justify-between gap-4">
                 <Button
                   type="submit"
-                  disabled={isSubmitting || status.type === 'loading'}
+                  disabled={
+                    !sessionReady || isSubmitting || status.type === 'loading'
+                  }
                   className="flex-1"
                 >
                   {isSubmitting || status.type === 'loading'
