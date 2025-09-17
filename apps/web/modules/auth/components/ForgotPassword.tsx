@@ -20,6 +20,7 @@ import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { TriangleAlert, ArrowBigLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 // Validation schema
 const forgotSchema = z.object({
@@ -29,6 +30,7 @@ const forgotSchema = z.object({
 type ForgotData = z.infer<typeof forgotSchema>;
 
 export default function ForgotPasswordForm() {
+  const t = useTranslations('ForgotPassword');
   const {
     register,
     handleSubmit,
@@ -78,10 +80,9 @@ export default function ForgotPasswordForm() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white py-12 px-4">
       <Card className="w-full max-w-xl shadow-lg rounded-2xl">
         <CardHeader className="px-8 pt-8">
-          <CardTitle className="text-2xl flex items-center gap-2"><Link href={"/signin"}><ArrowBigLeft className='hover:bg-gray-400 rounded-full cursor-pointer transition-colors duration-400' /></Link> Reset your password</CardTitle>
+          <CardTitle className="text-2xl flex items-center gap-2"><Link href={"/signin"}><ArrowBigLeft className='hover:bg-gray-400 rounded-full cursor-pointer transition-colors duration-400' /></Link> {t('title')}</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Enter the email address associated with your account. We will send a
-            secure link to reset your password.
+            {t("subtitle.sub-1")}
           </CardDescription>
         </CardHeader>
 
@@ -91,7 +92,7 @@ export default function ForgotPasswordForm() {
               <div className="flex items-start gap-4">
                 <TriangleAlert />
                 <div>
-                  <AlertTitle>Request sent</AlertTitle>
+                  <AlertTitle>{t('lable.requestSent')}</AlertTitle>
                   <AlertDescription>{message}</AlertDescription>
                 </div>
               </div>
@@ -103,7 +104,7 @@ export default function ForgotPasswordForm() {
               <div className="flex items-start gap-4">
                 <TriangleAlert />
                 <div>
-                  <AlertTitle>Unable to process request</AlertTitle>
+                  <AlertTitle>{t('label.unableRequest')}</AlertTitle>
                   <AlertDescription>{message}</AlertDescription>
                 </div>
               </div>
@@ -116,7 +117,7 @@ export default function ForgotPasswordForm() {
                 htmlFor="email"
                 className="mb-2 block text-sm font-medium text-slate-700"
               >
-                Email address
+                {t('label.email')}
               </Label>
               <Input
                 id="email"
@@ -136,13 +137,13 @@ export default function ForgotPasswordForm() {
 
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                <span>Didn’t receive the email?</span>
+                <span>{t('label.DidntReceiveEmail')}</span>
                 <button
                   type="button"
                   onClick={() => window.location.reload()}
                   className="ml-2 text-sm font-medium text-blue-600 hover:underline"
                 >
-                  Try again
+                  {t('label.tryAgain')}
                 </button>
               </div>
             </div>
@@ -155,16 +156,15 @@ export default function ForgotPasswordForm() {
                 disabled={isSubmitting || status === 'sending'}
               >
                 {status === 'sending' || isSubmitting
-                  ? 'Sending…'
-                  : 'Send reset link'}
+                  ? t('loading.load-1')
+                  : t('loading.load-2')}
               </Button>
             </div>
 
             <div className="pt-2">
               <Separator />
               <p className="mt-4 text-center text-sm text-muted-foreground">
-                For security reasons the reset link expires after a short time.
-                If you need additional assistance, contact support.
+                {t('description.desc-1')}
               </p>
             </div>
           </form>

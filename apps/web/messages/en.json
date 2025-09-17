@@ -74,6 +74,49 @@
       "button-1": "Continue with Google",
       "button-2": "Sign In",
       "button-3": "Sign Up"
+    },
+    "error": {
+      "errorInvalidLogin": "Invalid email or password"
+    }
+  },
+  "ForgotPassword": {
+    "title": "Reset your password",
+    "subtitle": {
+      "sub-1": "Enter the email address associated with your account. We will send a secure link to reset your password."
+    },
+    "label": {
+      "email": "Email address",
+      "requestSent": "Request sent",
+      "unableRequest": "Unable to process request",
+      "DidntReceiveEmail": "Didn’t receive the email?",
+      "tryAgain": "Try again"
+    },
+    "loading": {
+      "load-1": "Sending…",
+      "load-2": "Send reset link"
+    },
+    "description": {
+      "desc-1": "For security reasons the reset link expires after a short time. If you need additional assistance, contact support."
+    }
+  },
+  "ResetPassword": {
+    "title": "Reset your password",
+    "subtitle": {
+      "sub-1": "Choose a new password for your account."
+    },
+    "label": {
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password"
+    },
+    "button": {
+      "button-1": "Reset password"
+    },
+    "description": {
+      "desc-1": "Tip: This page is only valid if you accessed it from the reset link in your email."
+    },
+    "error": {
+      "newPassword": "Password must be at least 8 characters",
+      "confirmPassword": "Please confirm your password"
     }
   }
 }

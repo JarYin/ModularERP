@@ -19,8 +19,10 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { ResetForm, ResetSchema } from '../validation';
+import { useTranslations } from 'next-intl';
 
 export default function ResetPasswordPage() {
+  const t = useTranslations("ResetPassword")
   const [status, setStatus] = useState<
     | { type: 'idle' }
     | { type: 'loading' }
@@ -98,10 +100,10 @@ export default function ResetPasswordPage() {
               </div>
               <div>
                 <CardTitle className="text-white text-lg">
-                  Reset your password
+                  {t('title')}
                 </CardTitle>
                 <CardDescription className="text-blue-100 text-sm">
-                  Choose a new password for your account.
+                  {t('subtitle.sub-1')}
                 </CardDescription>
               </div>
             </div>
@@ -153,7 +155,7 @@ export default function ResetPasswordPage() {
               <div>
                 <Label htmlFor="password" className="flex items-center gap-2">
                   <Lock className="mb-1" />
-                  <span>New password</span>
+                  <span>{t('label.newPassword')}</span>
                 </Label>
                 <Input
                   id="password"
@@ -164,25 +166,25 @@ export default function ResetPasswordPage() {
                 />
                 {errors.password && (
                   <p className="text-sm text-red-600 mt-1">
-                    {errors.password.message}
+                    {errors.password.message && t('error.newPassword')}
                   </p>
                 )}
               </div>
 
               <div>
                 <Label htmlFor="confirm" className="flex items-center gap-2">
-                  <span>Confirm password</span>
+                  <span>{t('label.confirmPassword')}</span>
                 </Label>
                 <Input
                   id="confirm"
                   type="password"
-                  placeholder="Confirm password"
+                  placeholder={t('label.confirmPassword')}
                   {...register('confirm')}
                   aria-invalid={!!errors.confirm}
                 />
                 {errors.confirm && (
                   <p className="text-sm text-red-600 mt-1">
-                    {errors.confirm.message}
+                    {errors.confirm.message && t('error.confirmPassword')}
                   </p>
                 )}
               </div>
@@ -203,8 +205,7 @@ export default function ResetPasswordPage() {
             </form>
 
             <div className="mt-4 text-sm text-slate-600">
-              Tip: This page is only valid if you accessed it from the reset
-              link in your email.
+              {t('description.desc-1')}
             </div>
           </CardContent>
         </Card>

@@ -17,6 +17,7 @@ export default function SignIn() {
   const t = useTranslations('SignIn');
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -29,6 +30,7 @@ export default function SignIn() {
   const onSubmit = async (data: SignInData) => {
     try {
       setLoading(true);
+      setErrorMessage(null);
       const { access_token, user } = await signinUser(
         data.email,
         data.password,
@@ -45,6 +47,7 @@ export default function SignIn() {
       router.push('/dashboard');
     } catch (error) {
       console.error('Sign-in error:', error);
+      setErrorMessage(t('error.errorInvalidLogin'));
     } finally {
       setLoading(false);
     }
@@ -82,6 +85,9 @@ export default function SignIn() {
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
+            {errorMessage && (
+              <p className="text-red-500 w-full mb-2 text-center">{errorMessage}</p>
+            )}
             <label>{t('InputForm.email')}</label>
             <input
               type="email"
