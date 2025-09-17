@@ -19,6 +19,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { TriangleAlert, ArrowBigLeft } from 'lucide-react';
+import Link from 'next/link';
 
 // Validation schema
 const forgotSchema = z.object({
@@ -77,7 +78,7 @@ export default function ForgotPasswordForm() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white py-12 px-4">
       <Card className="w-full max-w-xl shadow-lg rounded-2xl">
         <CardHeader className="px-8 pt-8">
-          <CardTitle className="text-2xl flex items-center gap-2"><ArrowBigLeft className='hover:bg-gray-400 rounded-full cursor-pointer transition-colors duration-400' /> Reset your password</CardTitle>
+          <CardTitle className="text-2xl flex items-center gap-2"><Link href={"/signin"}><ArrowBigLeft className='hover:bg-gray-400 rounded-full cursor-pointer transition-colors duration-400' /></Link> Reset your password</CardTitle>
           <CardDescription className="text-muted-foreground">
             Enter the email address associated with your account. We will send a
             secure link to reset your password.
