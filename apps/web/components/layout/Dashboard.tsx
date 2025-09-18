@@ -25,6 +25,7 @@ import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { destroySession } from '@/lib/session';
 import Image from 'next/image';
+import ProfileMenu from '../ui/profile-menu';
 
 // You can install lucide-react by running: npm install lucide-react
 export const menuItems = [
@@ -174,8 +175,7 @@ export const Navbar = ({
           <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-blue-500 ring-2 ring-white"></span>
         </div>
         <div className="h-8 w-8 rounded-full bg-gray-200 overflow-hidden">
-          {/* Placeholder for user avatar */}
-          <Image src={"/avatar-anonymous.jpg"} width={150} height={150} alt='avatar' />
+          <ProfileMenu />
         </div>
       </div>
     </header>

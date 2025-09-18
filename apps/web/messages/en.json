@@ -117,6 +117,7 @@
     "error": {
       "newPassword": "Password must be at least 8 characters",
       "confirmPassword": "Please confirm your password"
-    }
+    },
+    "success": "Password reset successfully. You may now sign in."
   }
 }
