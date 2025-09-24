@@ -19,13 +19,16 @@ import {
   Globe,
   Palette,
   BellRing,
+  User,
+  Menu,
+  X,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { destroySession } from '@/lib/session';
-import Image from 'next/image';
 import ProfileMenu from '../ui/profile-menu';
+import { Button } from '../ui/button';
 
 // You can install lucide-react by running: npm install lucide-react
 export const menuItems = [
@@ -64,82 +67,147 @@ export const menuItems = [
   },
 ];
 
+export const subMenuItems = [
+  {
+    icon: <User size={20} />,
+    name: 'Profile',
+    href: '/dashboard/profile',
+  },
+];
+
 export const Sidebar = () => {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     await destroySession();
     window.location.href = '/';
   };
-  const pathname = usePathname();
 
   return (
-    <aside className="flex flex-col h-screen bg-white text-gray-700 w-64 p-4 border-r border-gray-200 shrink-0">
-      {/* Logo */}
-      <div className="flex items-center mb-10 shrink-0">
-        <div className="bg-blue-600 p-2 rounded-lg">
-          <Building size={24} className="text-white" />
-        </div>
-        <h1 className="text-xl font-bold ml-3 text-gray-800">ModularERP</h1>
+    <>
+      {/* Mobile Burger */}
+      <div className="lg:hidden fixed top-4 left-4 z-0">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+        </Button>
       </div>
 
-      {/* Menu */}
-      <nav className="flex-grow">
-        <ul>
-          {menuItems.map((item, index) => {
-            const isActive = pathname === item.href;
-            return (
-              <li key={index} className="mb-2">
-                <a
-                  href={item.href}
-                  className={`flex items-center p-3 rounded-lg transition-colors ${
-                    isActive ? 'bg-blue-600 text-white' : 'hover:bg-gray-100'
-                  }`}
-                >
-                  {item.icon}
-                  <span className="ml-4 font-medium">{item.name}</span>
-                </a>
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+      {/* Sidebar */}
+      <aside
+        className={`group fixed lg:static top-0 left-0 h-screen bg-white border-r border-gray-200 z-40 transition-all duration-300
+        ${collapsed ? 'w-20' : 'w-64'} 
+        ${mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
+      >
+        {/* Collapse Button (desktop only, show on hover) */}
+        <Button
+          variant="default"
+          size="icon"
+          className="hidden lg:flex absolute -right-10 cursor-pointer top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity rounded-full shadow items-center"
+          onClick={() => setCollapsed(!collapsed)}
+        >
+          {collapsed ? '»' : '«'}
+        </Button>
 
-      {/* Org/User */}
-      <div className="mb-4 shrink-0">
-        <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
-          <div className="flex items-center">
-            <FileText size={20} className="text-gray-500" />
-            <div className="ml-3">
-              <p className="font-semibold text-sm text-gray-800">Acme Corp</p>
+        <div className="flex flex-col h-full p-4">
+          {/* Logo */}
+          <div className="flex items-center mb-10">
+            <div className="bg-blue-600 p-2 rounded-lg">
+              <Building size={24} className="text-white" />
+            </div>
+            {!collapsed && (
+              <h1 className="text-xl font-bold ml-3 text-gray-800">
+                ModularERP
+              </h1>
+            )}
+          </div>
+
+          {/* Menu */}
+          <nav className="flex-grow">
+            <ul>
+              {menuItems.map((item, index) => {
+                const isActive = pathname === item.href;
+                return (
+                  <li key={index} className="mb-2">
+                    <a
+                      href={item.href}
+                      className={`flex items-center p-3 rounded-lg transition-colors ${
+                        isActive
+                          ? 'bg-blue-600 text-white'
+                          : 'hover:bg-gray-100'
+                      }`}
+                    >
+                      {item.icon}
+                      {!collapsed && (
+                        <span className="ml-4 font-medium">{item.name}</span>
+                      )}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          {/* Org/User */}
+          <div className="mb-4 shrink-0">
+            <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:bg-gray-50 cursor-pointer">
+              <div className="flex items-center">
+                <FileText size={20} className="text-gray-500" />
+                {!collapsed && (
+                  <div className="ml-3">
+                    <p className="font-semibold text-sm text-gray-800">
+                      Acme Corp
+                    </p>
+                  </div>
+                )}
+              </div>
+              {!collapsed && (
+                <div className="flex items-center">
+                  <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
+                    Owner
+                  </span>
+                  <ChevronDown size={16} className="ml-2 text-gray-400" />
+                </div>
+              )}
             </div>
           </div>
-          <div className="flex items-center">
-            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-md border border-gray-200">
-              Owner
-            </span>
-            <ChevronDown size={16} className="ml-2 text-gray-400" />
+
+          {/* Logout */}
+          <div className="shrink-0">
+            <button
+              onClick={handleLogout}
+              className="flex items-center p-3 rounded-lg w-full cursor-pointer hover:bg-gray-100 transition-colors"
+            >
+              <LogOut size={20} className="text-gray-500" />
+              {!collapsed && <span className="ml-4">Logout</span>}
+            </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* Logout */}
-      <div className="shrink-0">
-        <button
-          onClick={handleLogout}
-          className="flex items-center p-3 rounded-lg w-full cursor-pointer hover:bg-gray-100 transition-colors"
-        >
-          <LogOut size={20} className="text-gray-500" />
-          Logout
-        </button>
-      </div>
-    </aside>
+      {/* Overlay for Mobile */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/30 z-30 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+    </>
   );
 };
 
 export const Navbar = ({
   activeMenu,
+  subMenu,
 }: {
   activeMenu: { icon: React.ReactNode; name: string; href: string };
+  subMenu?: { icon: React.ReactNode; name: string; href: string };
 }) => {
   return (
     <header className="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-8 shrink-0">
@@ -152,7 +220,19 @@ export const Navbar = ({
           {activeMenu?.icon}
           <span className="ml-2">{activeMenu?.name}</span>
         </Link>
-        <ChevronRight size={16} className="mx-2" />
+
+        {subMenu && (
+          <>
+            <ChevronRight size={16} className="mx-2" />
+            <Link
+              href={subMenu?.href || '#'}
+              className="flex items-center hover:text-gray-700"
+            >
+              {subMenu?.icon}
+              <span className="ml-2">{subMenu?.name}</span>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Search and User Actions */}

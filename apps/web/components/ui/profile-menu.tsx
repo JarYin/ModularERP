@@ -1,8 +1,16 @@
-"use client";
+'use client';
 
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import Image from "next/image";
-import { LogOut, User } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import Image from 'next/image';
+import { LogOut, User } from 'lucide-react';
+import Link from 'next/link';
 
 export default function ProfileMenu() {
   return (
@@ -22,10 +30,12 @@ export default function ProfileMenu() {
       <DropdownMenuContent align="end" className="w-48">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <User className="mr-2 h-4 w-4" />
-          <span>Profile</span>
-        </DropdownMenuItem>
+        <Link href={'/dashboard/profile'} >
+          <DropdownMenuItem>
+            <User className="mr-2 h-4 w-4" />
+            <span>Profile</span>
+          </DropdownMenuItem>
+        </Link>
         <DropdownMenuItem>
           <LogOut className="mr-2 h-4 w-4" />
           <span>Logout</span>

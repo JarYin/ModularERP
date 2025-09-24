@@ -2,34 +2,30 @@
 
 import { getSession } from '@/lib/session';
 import { useEffect, useState } from 'react';
+import profileAPI from '@/modules/user/api/profileAPI';
 
 export default function Dashboard() {
   const [data, setData] = useState<object | null>(null);
 
   useEffect(() => {
-  const fetchData = async () => {
-    const session = await getSession();
+    const fetchData = async () => {
+      const session = await getSession();
 
-    if (!session?.accessToken) return;
+      if (!session?.accessToken) return;
 
-    console.log(session)
+      console.log(session);
 
-    const res = await fetch("http://localhost:5000/api/profile", {
-      headers: {
-        Authorization: `Bearer ${session.accessToken}`,
-      },
-    });
+      try {
+        const res = await profileAPI.getProfile();
+        setData(res.data); // ✅ ใช้ res.data แทน res.json()
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
 
-    let jsonData = null;
-    if (res.ok) {
-      jsonData = await res.json();
-    }
-    setData(jsonData);
-  };
-
-  fetchData();
-}, []);
-
+    fetchData();
+  }, []);
 
   return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }
+
