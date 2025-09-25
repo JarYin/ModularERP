@@ -1,14 +1,21 @@
 import z from "zod";
-
-const phoneRegex = new RegExp(
-  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
-);
+import parsePhoneNumber from "libphonenumber-js";
 
 export const organizationProfileSchema = z.object(({
     companyName: z.string().nonempty("Company Name is required!"),
     contactEmail: z.string().email("invalid email address."),
     industry: z.string().nonempty("Industry is required!"),
-    phone: z.string().regex(phoneRegex, 'Invalid Number!'),
+    phone: z
+    .string()
+    .refine((val) => {
+      if (!val) return false;
+      try {
+        const parsed = parsePhoneNumber(val);
+        return parsed?.isValid();
+      } catch {
+        return false;
+      }
+    }, "Invalid phone number!"),
     website: z.string().optional(),
     address: z.string().min(1, "address is required!"),
     description: z.string().optional()
