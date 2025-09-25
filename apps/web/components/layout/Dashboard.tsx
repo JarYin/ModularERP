@@ -22,6 +22,7 @@ import {
   User,
   Menu,
   X,
+  UsersRound
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -37,6 +38,7 @@ export const menuItems = [
     name: 'Dashboard',
     href: '/dashboard',
   },
+  { icon: <UsersRound size={20} />, name: 'Employees', href: '/dashboard/employees' },
   { icon: <Users size={20} />, name: 'CRM', href: '/dashboard/crm' },
   { icon: <Briefcase size={20} />, name: 'HR', href: '/dashboard/hr' },
   {
