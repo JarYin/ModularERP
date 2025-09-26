@@ -56,10 +56,10 @@ export default function Setting() {
             key={i}
             className="absolute w-2 h-2 bg-white rounded-full opacity-20 animate-bounce"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${2 + Math.random() * 2}s`,
+              left: `${37.40520026553732}%`,
+              top: `${48.13973520265509}%`,
+              animationDelay: `${2}s`,
+              animationDuration: `${4}s`,
             }}
           ></div>
         ))}
@@ -99,7 +99,7 @@ export default function Setting() {
               Join Organization
             </h2>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Have an invitation code? Enter it below to join your team's
+              Have an invitation code? Enter it below to join your team&apos;s
               organization instantly.
             </p>
 
@@ -203,7 +203,7 @@ export default function Setting() {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           from {
             opacity: 0;
