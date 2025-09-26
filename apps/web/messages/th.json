@@ -63,9 +63,13 @@
       "rememberMe": "จดจำฉัน",
       "placeholder": {
         "email": "กรอกอีเมลของคุณ",
-        "password": "กรอกรหัสผ่านของคุณ"
+        "password": "กรอกรหัสผ่านของคุณ",
+        "firstName": "กรอกชื่อ",
+        "lastName": "กรอกนามสกุล"
       },
-      "confirmPassword": "ยืนยันรหัสผ่าน"
+      "confirmPassword": "ยืนยันรหัสผ่าน",
+      "firstName": "ชื่อ",
+      "lastName": "นามสกุล"
     },
     "button": {
       "button-1": "ดำเนินการต่อด้วย Google",

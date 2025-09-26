@@ -6,7 +6,8 @@ import { SupabaseService } from '../supabase/supabase.service';
 export class AuthService {
   constructor(private readonly supabaseService: SupabaseService) { }
 
-  async signUp(email: string, password: string) {
+  async signUp(email: string, password: string, firstName: string,
+    lastName: string,) {
     const supabase = this.supabaseService.getClient();
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -17,7 +18,37 @@ export class AuthService {
       console.error("Supabase error:", error);
       throw new BadRequestException(error.message);
     }
-    return data;
+
+    const user = data.user;
+
+    if (!user) {
+      throw new BadRequestException("User creation failed");
+    }
+
+    const { error: profileError } = await supabase
+      .from("user_account")
+      .insert([
+        {
+          user_id: user.id,
+          org_id: null,
+          email,
+          first_name: firstName ?? null,
+          last_name: lastName ?? null,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ]);
+
+    if (profileError) {
+      console.error("Insert profile error:", profileError);
+      throw new BadRequestException(profileError.message);
+    }
+
+    return {
+      message: "User created successfully",
+      user,
+    };
   }
 
   async signIn(email: string, password: string) {
@@ -51,7 +82,7 @@ export class AuthService {
 
   async resetPassword(newPassword: string) {
     const supabase = this.supabaseService.getClient();
-    const { data, error } = await supabase.auth.updateUser({
+    const { error } = await supabase.auth.updateUser({
       password: newPassword,
     })
 

@@ -26,7 +26,12 @@ export default function SignUp() {
   const onSubmit = async (data: SignUpData) => {
     try {
       setLoading(true);
-      const response = await signupUser(data.email.trim(), data.password.trim());
+      const response = await signupUser(
+        data.email.trim(),
+        data.password.trim(),
+        data.firstName,
+        data.lastName
+      );
       if (response) {
         router.push('/signin');
       }
@@ -67,6 +72,36 @@ export default function SignUp() {
             </div>
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
+            <div className="flex justify-between gap-1">
+              <div className="w-full">
+                <label>{t('InputForm.firstName')}</label>
+                <input
+                  type="text"
+                  {...register('firstName')}
+                  placeholder={t('InputForm.placeholder.firstName')}
+                  className="border p-2 w-full rounded"
+                />
+                {errors.firstName && (
+                  <p className="text-red-500 w-full mb-4">
+                    {errors.firstName.message}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+                <label>{t('InputForm.lastName')}</label>
+                <input
+                  type="text"
+                  {...register('lastName')}
+                  placeholder={t('InputForm.placeholder.lastName')}
+                  className="border p-2 w-full rounded"
+                />
+                {errors.lastName && (
+                  <p className="text-red-500 w-full mb-4">
+                    {errors.lastName.message}
+                  </p>
+                )}
+              </div>
+            </div>
             <label>{t('InputForm.email')}</label>
             <input
               type="email"

@@ -1,27 +1,21 @@
 import { Injectable } from '@nestjs/common';
-
-export type User = {
-    userId: number,
-    email: string,
-    password: string
-}
-
-const users: User[] = [
-    {
-        userId: 1,
-        email: 'user1@example.com',
-        password: 'password1'
-    },
-    {
-        userId: 2,
-        email: 'user2@example.com',
-        password: 'password2'
-    }
-];
+import { SupabaseService } from 'src/supabase/supabase.service';
 
 @Injectable()
 export class UsersService {
-    async findByEmail(email: string): Promise<User | undefined> {
-        return users.find(user => user.email === email);
+    constructor(private readonly supabaseService: SupabaseService) { }
+
+    async getProfile(req) {
+        const userId = req.user.id;
+        const { data, error } = await this.supabaseService
+            .getClient()
+            .from('user_account')
+            .select('user_id, org_id')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (error) throw new Error(error.message)
+
+        return data;
     }
 }

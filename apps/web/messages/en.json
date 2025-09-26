@@ -66,9 +66,13 @@
       "rememberMe": "Remember me",
       "placeholder": {
         "email": "Enter your email",
-        "password": "Enter your password"
+        "password": "Enter your password",
+        "firstName": "Enter your firstname",
+        "lastName": "Enter your lastname"
       },
-      "confirmPassword": "Confirm Password"
+      "confirmPassword": "Confirm Password",
+      "firstName": "FirstName",
+      "lastName": "LastName"
     },
     "button": {
       "button-1": "Continue with Google",
