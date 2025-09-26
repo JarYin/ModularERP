@@ -132,8 +132,9 @@
   margin-left: -1px; /* ดึง input ไปทางซ้าย 1px เพื่อทับเส้นขอบ */
 
   /* Reset border radius for the input to merge with the flag button */
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  box-shadow: 0px 0px 2px  gray;
 }
 .phone-input .PhoneInputCountry {
   
