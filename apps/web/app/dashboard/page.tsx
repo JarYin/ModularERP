@@ -8,23 +8,22 @@ export default function Dashboard() {
   const [data, setData] = useState<object | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const session = await getSession();
+  const fetchData = async () => {
+    const accessToken = await getSession();
+    if (!accessToken) return;
 
-      if (!session?.accessToken) return;
+    console.log("Access token:", accessToken);
 
-      console.log(session);
+    try {
+      const res = await profileAPI.getProfile(); // ต้องส่ง token ไป
+      setData(res.data);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  };
 
-      try {
-        const res = await profileAPI.getProfile();
-        setData(res.data); // ✅ ใช้ res.data แทน res.json()
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  fetchData();
+}, []);
 
   return <pre>{JSON.stringify(data, null, 2)}</pre>;
 }

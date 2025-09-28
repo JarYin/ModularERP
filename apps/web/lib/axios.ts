@@ -12,14 +12,13 @@ const apiClient = axios.create({
 
 // Interceptor สำหรับ request → ใส่ token อัตโนมัติ
 apiClient.interceptors.request.use(async (config) => {
-  const session = await getSession();
-
-  if (session?.accessToken) {
-    config.headers.Authorization = `Bearer ${session.accessToken}`;
+  const accessToken = await getSession(); // คืนค่าเป็น string
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
-
   return config;
 });
+
 
 // Interceptor สำหรับ response
 apiClient.interceptors.response.use(

@@ -22,7 +22,7 @@ import {
   User,
   Menu,
   X,
-  UsersRound
+  UsersRound,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -30,6 +30,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { destroySession } from '@/lib/session';
 import ProfileMenu from '../ui/profile-menu';
 import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 // You can install lucide-react by running: npm install lucide-react
 export const menuItems = [
@@ -38,7 +39,11 @@ export const menuItems = [
     name: 'Dashboard',
     href: '/dashboard',
   },
-  { icon: <UsersRound size={20} />, name: 'Employees', href: '/dashboard/employees' },
+  {
+    icon: <UsersRound size={20} />,
+    name: 'Employees',
+    href: '/dashboard/employees',
+  },
   { icon: <Users size={20} />, name: 'CRM', href: '/dashboard/crm' },
   { icon: <Briefcase size={20} />, name: 'HR', href: '/dashboard/hr' },
   {
@@ -81,11 +86,17 @@ export const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    await destroySession();
-    window.location.href = '/';
+    try {
+      await supabase.auth.signOut().catch(() => null); 
+      await destroySession();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      router.push('/');
+    }
   };
 
   return (

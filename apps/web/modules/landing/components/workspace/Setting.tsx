@@ -9,15 +9,17 @@ import {
   Plus,
   ArrowRight,
   Sparkles,
-  LogOut
+  LogOut,
 } from 'lucide-react';
 import { destroySession } from '@/lib/session';
 import { supabase } from '@/lib/supabaseClient';
+import { useRouter } from 'next/navigation';
 
 export default function Setting() {
   const [inviteCode, setInviteCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
+  const router = useRouter();
 
   const handleJoinOrg = async () => {
     if (!inviteCode.trim()) return;
@@ -29,16 +31,21 @@ export default function Setting() {
 
   const handleCreateOrg = async () => {
     setCreateLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    router.push('/workspace/organization')
     setCreateLoading(false);
   };
 
   const handleLogout = async () => {
-      await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut().catch(() => null);
       await destroySession();
-      window.location.href = '/signin';
-    };
+    } catch (err) {
+      console.error(err);
+    } finally {
+      router.push('/signin');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex flex-col justify-center items-center p-4 relative overflow-hidden">
@@ -171,7 +178,7 @@ export default function Setting() {
               <Button
                 onClick={handleCreateOrg}
                 disabled={createLoading}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 h-12"
+                className="w-full bg-gradient-to-r cursor-pointer from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 h-12"
               >
                 {createLoading ? (
                   <div className="flex items-center space-x-2">
@@ -189,9 +196,13 @@ export default function Setting() {
           </div>
         </div>
 
-        <div className='flex justify-center mt-4'>
-          <Button onClick={handleLogout} variant={'primary'} className="mx-auto w-full cursor-pointer hover:scale-105 transition-transform duration-300">
-            <LogOut/> Logout
+        <div className="flex justify-center mt-4">
+          <Button
+            onClick={handleLogout}
+            variant={'primary'}
+            className="mx-auto w-full cursor-pointer hover:scale-105 transition-transform duration-300"
+          >
+            <LogOut /> Logout
           </Button>
         </div>
 

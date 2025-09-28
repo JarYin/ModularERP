@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { createSession } from '@/lib/session';
 import { signinUser } from '../api/signin';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function SignIn() {
   const t = useTranslations('SignIn');
@@ -31,18 +32,20 @@ export default function SignIn() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      const { access_token, user } = await signinUser(
-        data.email,
-        data.password,
-      );
 
-      await createSession(
-        {
-          user: { id: user.id, email: user.email },
-          accessToken: access_token,
-        },
-        data.rememberMe,
-      );
+      const { data: signInData, error } =
+        await supabase.auth.signInWithPassword({
+          email: data.email,
+          password: data.password,
+        });
+
+      if (error) throw error;
+
+      const access_token = signInData.session?.access_token;
+      if (!access_token)
+        throw new Error('No access token returned from Supabase');
+
+      await createSession(access_token, data.rememberMe);
 
       router.push('/dashboard');
     } catch (error) {
@@ -86,7 +89,9 @@ export default function SignIn() {
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             {errorMessage && (
-              <p className="text-red-500 w-full mb-2 text-center">{errorMessage}</p>
+              <p className="text-red-500 w-full mb-2 text-center">
+                {errorMessage}
+              </p>
             )}
             <label>{t('InputForm.email')}</label>
             <input
