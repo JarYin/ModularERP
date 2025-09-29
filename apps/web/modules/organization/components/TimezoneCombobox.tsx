@@ -1,8 +1,6 @@
 'use client';
 
-import * as React from 'react';
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
-
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,10 +17,28 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { timezones } from '@/modules/landing/hook/timezone';
+import { useEffect, useState } from 'react';
 
-export function TimezoneCombobox() {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState('');
+interface TimezoneComboboxProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export function TimezoneCombobox({ value, onChange }: TimezoneComboboxProps) {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!value) {
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        if (tz && timezones.includes(tz)) {
+          onChange(tz);
+        }
+      } catch (err) {
+        console.error('Cannot detect timezone:', err);
+      }
+    }
+  }, [value, onChange]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -36,34 +52,32 @@ export function TimezoneCombobox() {
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {value
-            ? timezones.find((framework) => framework === value)
-            : 'Select framework...'}
+          {value || 'Select timezone...'}
           <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0">
         <Command>
-          <CommandInput placeholder="Search framework..." />
+          <CommandInput placeholder="Search timezone..." />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No Timezone found.</CommandEmpty>
             <CommandGroup>
-              {timezones.map((framework) => (
+              {timezones.map((time) => (
                 <CommandItem
-                  key={framework}
-                  value={framework}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? '' : currentValue);
+                  key={time}
+                  value={time}
+                  onSelect={(currentValue:string) => {
+                    onChange(currentValue === value ? '' : currentValue);
                     setOpen(false);
                   }}
                 >
                   <CheckIcon
                     className={cn(
                       'mr-2 h-4 w-4',
-                      value === framework ? 'opacity-100' : 'opacity-0',
+                      value === time ? 'opacity-100' : 'opacity-0',
                     )}
                   />
-                  {framework}
+                  {time}
                 </CommandItem>
               ))}
             </CommandGroup>

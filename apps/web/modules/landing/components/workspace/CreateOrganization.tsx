@@ -25,8 +25,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { timezones } from '../../hook/timezone';
 import { TimezoneCombobox } from '@/modules/organization/components/TimezoneCombobox';
+import { currency } from '../../types';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
+import { CountryCode } from 'libphonenumber-js';
+import DropzonePreview from '@/hooks/dropzone';
 
 export default function CreateOrganization() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -41,7 +45,7 @@ export default function CreateOrganization() {
     domain: '',
     currency: '',
     phone: '',
-    locale: '',
+    locale: 'TH',
     timezone: '',
     subscription_plan: '',
     settings: {},
@@ -100,14 +104,6 @@ export default function CreateOrganization() {
     'Other',
   ];
 
-  const organizationSizes = [
-    '1-10 employees',
-    '11-50 employees',
-    '51-200 employees',
-    '201-500 employees',
-    '500+ employees',
-  ];
-
   const language = ['TH', 'EN'];
 
   const handleInputChange = (field: string, value: string | boolean) => {
@@ -134,12 +130,24 @@ export default function CreateOrganization() {
     // Handle success
   };
 
+  function getCountryFromLocale(locale?: string): CountryCode | undefined {
+    if (!locale) return undefined;
+
+    const parts = locale.split('-');
+    return parts[1]?.toUpperCase() as CountryCode | undefined;
+  }
+
   const isStepValid = () => {
     switch (currentStep) {
       case 1:
         return formData.name.trim().length > 0;
       case 2:
-        return formData.industry && formData.locale;
+        return (
+          formData.industry &&
+          formData.locale &&
+          formData.currency &&
+          formData.timezone
+        );
       case 3:
         return true;
       case 4:
@@ -278,19 +286,21 @@ export default function CreateOrganization() {
             <div className="grid md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Currency
+                  Currency *
                 </label>
                 <Select
-                  value={formData.locale}
-                  onValueChange={(value) => handleInputChange('locale', value)}
+                  value={formData.currency}
+                  onValueChange={(value) =>
+                    handleInputChange('currency', value)
+                  }
                 >
                   <SelectTrigger className="w-full h-12 rounded-xl border cursor-pointer border-white/20 bg-white/10 px-3 text-white focus:bg-white/15 focus:border-white/30">
-                    <SelectValue placeholder="Select locale" />
+                    <SelectValue placeholder="Select currency" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 text-white">
-                    {language.map((ln) => (
-                      <SelectItem key={ln} value={ln}>
-                        {ln}
+                    {currency.map((cy) => (
+                      <SelectItem key={cy} value={cy}>
+                        {cy}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -299,16 +309,29 @@ export default function CreateOrganization() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Timezone
+                  Timezone *
                 </label>
-                <TimezoneCombobox />
+                <TimezoneCombobox
+                  value={formData.timezone}
+                  onChange={(tz) =>
+                    setFormData((prev) => ({ ...prev, timezone: tz }))
+                  }
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Phone
                 </label>
-                <Input className="w-full h-12 rounded-xl border border-white/20 bg-white/10 px-3 text-white focus:bg-white/15 focus:border-white/30" />
+                <PhoneInput
+                  international
+                  defaultCountry={getCountryFromLocale(formData.locale)}
+                  value={formData.phone}
+                  onChange={(phone: string) =>
+                    setFormData((prev) => ({ ...prev, phone: phone || '' }))
+                  }
+                  className="w-full h-12 rounded-xl border border-white/20 bg-white/10 px-3 text-gray-400 focus:bg-white/15 focus:border-white/30"
+                />
               </div>
             </div>
 
@@ -326,15 +349,7 @@ export default function CreateOrganization() {
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Organization Logo
                 </label>
-                <div className="border-2 border-dashed border-white/20 rounded-xl p-8 text-center hover:border-white/30 transition-colors cursor-pointer">
-                  <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-300 mb-2">
-                    Click to upload or drag and drop
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    SVG, PNG, JPG up to 10MB
-                  </p>
-                </div>
+                <DropzonePreview />
               </div>
             </div>
           </div>

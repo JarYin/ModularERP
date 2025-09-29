@@ -91,7 +91,6 @@ export const Sidebar = () => {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut().catch(() => null); 
-      await destroySession();
     } catch (err) {
       console.error(err);
     } finally {
