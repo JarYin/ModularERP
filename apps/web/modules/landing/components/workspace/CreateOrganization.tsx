@@ -9,12 +9,12 @@ import {
   Users,
   Settings,
   CheckCircle,
-  Upload,
   Globe,
   Mail,
   UserPlus,
   Sparkles,
   Star,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import {
@@ -27,10 +27,12 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { TimezoneCombobox } from '@/modules/organization/components/TimezoneCombobox';
 import { currency } from '../../types';
-import PhoneInput from 'react-phone-number-input';
+import PhoneInput, { formatPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { CountryCode } from 'libphonenumber-js';
 import DropzonePreview from '@/hooks/dropzone';
+import Image from 'next/image';
+import { createOrganization } from '../../api/create-organization';
 
 export default function CreateOrganization() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -51,17 +53,30 @@ export default function CreateOrganization() {
     settings: {},
     status: '',
     address: '',
-    logo: null,
+    logo: null as string | null,
     teamEmails: [] as string[],
   });
+  const [error, setError] = useState('');
 
   const handleAddTeamEmail = () => {
-    if (teamEmail.trim() === '') return;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(teamEmail)) {
+      setError('Invalid email address');
+      return;
+    }
+
+    if (formData.teamEmails.includes(teamEmail)) {
+      setError('Email already added');
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      teamEmails: [...prev.teamEmails, teamEmail.trim()],
+      teamEmails: [...prev.teamEmails, teamEmail],
     }));
     setTeamEmail('');
+    setError(''); // clear error
   };
 
   const steps = [
@@ -124,10 +139,23 @@ export default function CreateOrganization() {
 
   const handleSubmit = async () => {
     setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const res = await createOrganization(formData);
+    if(res.status !== 200) {
+      console.error("Failed to create organization");
+      setIsLoading(false);
+      return;
+    }
+
+    console.log("Organization created successfully:", res.data);
+
     setIsLoading(false);
-    // Handle success
+  };
+
+  const handleRemoveTeamEmail = async (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      teamEmails: prev.teamEmails.filter((_, i) => i !== index),
+    }));
   };
 
   function getCountryFromLocale(locale?: string): CountryCode | undefined {
@@ -327,8 +355,8 @@ export default function CreateOrganization() {
                   international
                   defaultCountry={getCountryFromLocale(formData.locale)}
                   value={formData.phone}
-                  onChange={(phone: string) =>
-                    setFormData((prev) => ({ ...prev, phone: phone || '' }))
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, phone: value ?? '' }))
                   }
                   className="w-full h-12 rounded-xl border border-white/20 bg-white/10 px-3 text-gray-400 focus:bg-white/15 focus:border-white/30"
                 />
@@ -340,7 +368,7 @@ export default function CreateOrganization() {
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Address
                 </label>
-                <Textarea className="w-full h-12 rounded-xl border border-white/20 bg-white/10 px-3 text-white focus:bg-white/15 focus:border-white/30" />
+                <Textarea value={formData.address} onChange={(e) => setFormData((prev) => ({ ...prev, address: e.target.value }))} className="w-full h-12 rounded-xl border border-white/20 bg-white/10 px-3 text-white focus:bg-white/15 focus:border-white/30" />
               </div>
             </div>
 
@@ -349,7 +377,11 @@ export default function CreateOrganization() {
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Organization Logo
                 </label>
-                <DropzonePreview />
+                <DropzonePreview
+                  onChange={(logo) =>
+                    setFormData((prev) => ({ ...prev, logo }))
+                  }
+                />
               </div>
             </div>
           </div>
@@ -362,6 +394,7 @@ export default function CreateOrganization() {
               <div className="flex-1 relative">
                 <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
                 <Input
+                  type="email"
                   placeholder="Enter email address"
                   value={teamEmail}
                   onChange={(e) => setTeamEmail(e.target.value)}
@@ -376,6 +409,12 @@ export default function CreateOrganization() {
               </Button>
             </div>
 
+            {error && (
+              <p className="text-red-500 text-sm font-bold text-center">
+                {error}
+              </p>
+            )}
+
             {/* แสดง email ทั้งหมด */}
             <div className="grid md:grid-cols-2 gap-4">
               {formData.teamEmails.map((email, index) => (
@@ -385,6 +424,12 @@ export default function CreateOrganization() {
                     readOnly
                     className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/15 focus:border-white/30 h-10 rounded-lg text-sm"
                   />
+                  <Button
+                    onClick={() => handleRemoveTeamEmail(index)}
+                    className="bg-red-500 hover:bg-red-600 text-white h-10 px-4 rounded-lg"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
                 </div>
               ))}
             </div>
@@ -410,9 +455,22 @@ export default function CreateOrganization() {
         return (
           <div className="space-y-6 animate-slide-in">
             <div className="text-center mb-8">
-              <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce-gentle">
-                <Star className="w-10 h-10 text-white" />
-              </div>
+              {formData.logo ? (
+                <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce-gentle">
+                <Image
+                  src={formData.logo || ''}
+                  alt="Organization Logo"
+                  width={100}
+                  height={100}
+                  className="mx-auto"
+                />
+                </div>
+              ) : (
+                <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce-gentle">
+                  <Star className="w-10 h-10 text-white" />
+                </div>
+              )}
+
               <h2 className="text-3xl font-bold text-white mb-2">
                 Almost Done!
               </h2>
@@ -440,18 +498,18 @@ export default function CreateOrganization() {
                         {formData.industry || 'Not specified'}
                       </span>
                     </div>
-                    {/* <div className="flex justify-between">
-                      <span className="text-gray-400">Size:</span>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Locale:</span>
                       <span className="text-white">
-                        {formData.organization_size || 'Not specified'}
+                        {formData.locale || 'Not specified'}
                       </span>
-                    </div> */}
-                    {/* <div className="flex justify-between">
-                      <span className="text-gray-400">Privacy:</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Timezone:</span>
                       <span className="text-white">
-                        {formData.isPrivate ? 'Private' : 'Public'}
+                        {formData.timezone || 'Not specified'}
                       </span>
-                    </div> */}
+                    </div>
                   </div>
                 </div>
 
@@ -470,6 +528,18 @@ export default function CreateOrganization() {
                       <span className="text-gray-400">Description:</span>
                       <span className="text-white text-right max-w-[200px] truncate">
                         {formData.description || 'Not specified'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Phone:</span>
+                      <span className="text-white text-right max-w-[200px] truncate">
+                        {formatPhoneNumber(formData.phone) || 'Not specified'}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Address:</span>
+                      <span className="text-white text-right max-w-[200px] truncate">
+                        {formData.address || 'Not specified'}
                       </span>
                     </div>
                   </div>

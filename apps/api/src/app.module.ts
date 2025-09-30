@@ -10,11 +10,12 @@ import { UsersModule } from './users/users.module';
 import { SupabaseService } from './supabase/supabase.service';
 import { SupabaseModule } from './supabase/supabase.module';
 import { ProfileModule } from './profile/profile.module';
+import { OrganizationModule } from './organization/organization.module';
 
 @Module({
   imports: [LinksModule, AuthModule, ConfigModule.forRoot({
     isGlobal: true,
-  }), UsersModule, SupabaseModule, ProfileModule],
+  }), UsersModule, SupabaseModule, ProfileModule, OrganizationModule],
   controllers: [AppController],
   providers: [AppService, SupabaseService],
 })
