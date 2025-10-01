@@ -9,12 +9,23 @@ export class UsersService {
         const userId = req.user.id;
         const { data, error } = await this.supabaseService
             .getClient()
-            .from('user_account')
+            .from('user_organization')
             .select('user_id, org_id')
             .eq('user_id', userId)
             .maybeSingle();
 
-        if (error) throw new Error(error.message)
+        if (error) throw new Error(error.message);
+
+        if (data === null) {
+            const { data, error } = await this.supabaseService
+                .getClient()
+                .from('user_account')
+                .select('user_id')
+                .eq('user_id', userId)
+                .maybeSingle();
+            if (error) throw new Error(error.message);
+            return data;
+        }
 
         return data;
     }

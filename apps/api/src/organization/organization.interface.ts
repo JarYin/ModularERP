@@ -13,20 +13,21 @@ export const currency = [
 
 
 export interface Organization {
-    name: string;
-    description?: string;
-    website?: string;
-    industry: string;
-    domain?: string;
-    currency: typeof currency[number];
-    phone?: string;
-    locale: string;
-    timezone: string;
-    subscription_plan?: string;
-    settings?: unknown;
-    status: string;
-    address?: string;
-    logo?: string | null;
-    teamEmails?: string[];
-    billing_customer_id?: string;
+  id: string;
+  name: string;
+  description?: string;
+  website?: string;
+  industry: string;
+  domain?: string;
+  currency: typeof currency[number];
+  phone?: string;
+  locale: string;
+  timezone: string;
+  subscription_plan?: string;
+  settings?: unknown;
+  status: string;
+  address?: string;
+  logo?: string | null;
+  teamEmails?: string[];
+  billing_customer_id?: string;
 }

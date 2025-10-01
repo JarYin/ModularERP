@@ -1,4 +1,4 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { SupabaseAuthGuard } from 'src/auth/supabase-auth.guard';
 import { Organization } from './organization.interface';
@@ -9,7 +9,8 @@ export class OrganizationController {
 
     @UseGuards(SupabaseAuthGuard)
     @Post()
-    async createOrganization(@Req() req: Organization) {
-        return this.organizationService.createOrganization(req);
+    async createOrganization(@Body() body: Organization,@Req() req) {
+        const userId = req.user.id;
+        return this.organizationService.createOrganization(body,userId);
     }
 }

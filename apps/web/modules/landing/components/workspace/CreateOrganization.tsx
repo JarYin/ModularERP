@@ -33,8 +33,10 @@ import { CountryCode } from 'libphonenumber-js';
 import DropzonePreview from '@/hooks/dropzone';
 import Image from 'next/image';
 import { createOrganization } from '../../api/create-organization';
+import { useRouter } from 'next/navigation';
 
 export default function CreateOrganization() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [teamEmail, setTeamEmail] = useState('');
@@ -43,7 +45,6 @@ export default function CreateOrganization() {
     description: '',
     website: '',
     industry: '',
-    organization_size: '',
     domain: '',
     currency: '',
     phone: '',
@@ -76,7 +77,7 @@ export default function CreateOrganization() {
       teamEmails: [...prev.teamEmails, teamEmail],
     }));
     setTeamEmail('');
-    setError(''); // clear error
+    setError('');
   };
 
   const steps = [
@@ -140,13 +141,13 @@ export default function CreateOrganization() {
   const handleSubmit = async () => {
     setIsLoading(true);
     const res = await createOrganization(formData);
-    if(res.status !== 200) {
-      console.error("Failed to create organization");
+    if (!res || res.data?.error) {
+      console.error("Failed to create organization:", res?.data?.error?.message || "Unknown error");
       setIsLoading(false);
       return;
     }
 
-    console.log("Organization created successfully:", res.data);
+   router.push('/dashboard');
 
     setIsLoading(false);
   };

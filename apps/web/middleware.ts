@@ -27,7 +27,10 @@ export async function middleware(request: NextRequest) {
         // important! ป้องกัน edge runtime fetch error
         cache: 'no-store',
       }
-    ).catch(() => null);
+    ).catch((err) => {
+      console.error('Fetch error:', err);
+      return null;
+    });
 
     if (!res || !res.ok) {
       const loginUrl = request.nextUrl.clone();

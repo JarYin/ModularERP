@@ -6,16 +6,41 @@ import { Organization } from './organization.interface';
 export class OrganizationService {
     constructor(private readonly supabaseService: SupabaseService) { }
 
-    async createOrganization(data: Organization): Promise<Organization> {
-        const { data: organization, error } = await this.supabaseService
+    async createOrganization(data: Organization, userId: string): Promise<Organization> {
+        // Exclude 'logo' property if present
+        const { logo, teamEmails, ...dataWithoutLogo } = data;
+        const res = await this.supabaseService
             .getClient()
             .from('organization')
-            .insert(data)
+            .insert(dataWithoutLogo)
             .select()
             .single();
-        if (error) {
-            throw new Error(`Failed to create organization: ${error.message}`);
+
+        if (!res || res.error) {
+            console.error("Failed to create organization:", res?.error?.message || "Unknown error");
+            throw new Error(`Failed to create organization: ${res?.error?.message || "Unknown error"}`);
         }
-        return organization;
+
+        const orgId = res.data.org_id;
+
+        if (res) {
+            const userOrg = await this.supabaseService
+                .getClient()
+                .from('user_organization')
+                .insert({
+                    user_id: userId, org_id: orgId,
+                    is_active: true
+                })
+                .select()
+                .single();
+
+            if (userOrg.error) {
+                console.error("Failed to link user to org:", userOrg.error.message);
+                throw new Error(`Failed to link user to org: ${userOrg.error.message}`);
+            }
+
+        }
+
+        return res.data;
     }
 }
