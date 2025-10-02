@@ -5,12 +5,13 @@ import { Organization } from './organization.interface';
 
 @Controller('organization')
 export class OrganizationController {
-    constructor(private readonly organizationService: OrganizationService) {}
+    constructor(private readonly organizationService: OrganizationService) { }
 
     @UseGuards(SupabaseAuthGuard)
     @Post()
-    async createOrganization(@Body() body: Organization,@Req() req) {
+    async createOrganization(@Body() body: Organization, @Req() req) {
         const userId = req.user.id;
-        return this.organizationService.createOrganization(body,userId);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        return this.organizationService.createOrganization(body, userId);
     }
 }

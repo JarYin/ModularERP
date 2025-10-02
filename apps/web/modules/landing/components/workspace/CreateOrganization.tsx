@@ -142,12 +142,15 @@ export default function CreateOrganization() {
     setIsLoading(true);
     const res = await createOrganization(formData);
     if (!res || res.data?.error) {
-      console.error("Failed to create organization:", res?.data?.error?.message || "Unknown error");
+      console.error(
+        'Failed to create organization:',
+        res?.data?.error?.message || 'Unknown error',
+      );
       setIsLoading(false);
       return;
     }
 
-   router.push('/dashboard');
+    router.push('/dashboard');
 
     setIsLoading(false);
   };
@@ -369,7 +372,16 @@ export default function CreateOrganization() {
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Address
                 </label>
-                <Textarea value={formData.address} onChange={(e) => setFormData((prev) => ({ ...prev, address: e.target.value }))} className="w-full h-12 rounded-xl border border-white/20 bg-white/10 px-3 text-white focus:bg-white/15 focus:border-white/30" />
+                <Textarea
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      address: e.target.value,
+                    }))
+                  }
+                  className="w-full h-12 rounded-xl border border-white/20 bg-white/10 px-3 text-white focus:bg-white/15 focus:border-white/30"
+                />
               </div>
             </div>
 
@@ -394,13 +406,15 @@ export default function CreateOrganization() {
             <div className="flex space-x-2">
               <div className="flex-1 relative">
                 <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                <Input
-                  type="email"
-                  placeholder="Enter email address"
-                  value={teamEmail}
-                  onChange={(e) => setTeamEmail(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/15 focus:border-white/30 h-12 rounded-xl pl-10"
-                />
+                <div className="flex items-center gap-1">
+                  <Input
+                    type="email"
+                    placeholder="Enter email address"
+                    value={teamEmail}
+                    onChange={(e) => setTeamEmail(e.target.value)}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/15 focus:border-white/30 h-12 rounded-xl pl-10"
+                  />
+                </div>
               </div>
               <Button
                 onClick={handleAddTeamEmail}
@@ -458,13 +472,13 @@ export default function CreateOrganization() {
             <div className="text-center mb-8">
               {formData.logo ? (
                 <div className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce-gentle">
-                <Image
-                  src={formData.logo || ''}
-                  alt="Organization Logo"
-                  width={100}
-                  height={100}
-                  className="mx-auto"
-                />
+                  <Image
+                    src={formData.logo || ''}
+                    alt="Organization Logo"
+                    width={100}
+                    height={100}
+                    className="mx-auto"
+                  />
                 </div>
               ) : (
                 <div className="w-20 h-20 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce-gentle">

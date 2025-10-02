@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { SupabaseService } from 'src/supabase/supabase.service';
 import { Organization } from './organization.interface';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class OrganizationService {
@@ -38,7 +39,30 @@ export class OrganizationService {
                 console.error("Failed to link user to org:", userOrg.error.message);
                 throw new Error(`Failed to link user to org: ${userOrg.error.message}`);
             }
+        }
 
+        if (teamEmails && teamEmails.length > 0) {
+            for (const email of teamEmails) {
+                const token = randomUUID();
+
+                const { data, error } = await this.supabaseService.getClient()
+                    .from('invitation')
+                    .insert({
+                        org_id: orgId,
+                        email,
+                        invited_by: userId,
+                        role_suggestion: "member",
+                        token,
+                        status: "pending",
+                        expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                        created_at: new Date(),
+                    })
+
+                if (error) {
+                    console.error("Failed to insert invitation:", error.message, error.details);
+                    throw new Error(`Failed to insert invitation: ${error.message}`);
+                }
+            }
         }
 
         return res.data;

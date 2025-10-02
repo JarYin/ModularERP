@@ -6,6 +6,16 @@ export class ProfileController {
   @UseGuards(SupabaseAuthGuard)
   @Get()
   getProfile(@Req() req) {
-    return req.user; // JWT payload from Supabase
+    const user = req.user;
+
+    const roles = user.app_metadata?.roles || []; // หรือ user.user_metadata?.roles
+
+    return {
+      user: {
+        ...user,
+        roles
+      }
+    };
   }
 }
+

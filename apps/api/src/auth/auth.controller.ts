@@ -1,6 +1,9 @@
 // src/auth/auth.controller.ts
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Roles } from './decorators/roles.decorator';
+import { SupabaseAuthGuard } from './supabase-auth.guard';
+import { RolesGuard } from './guards/roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -24,5 +27,19 @@ export class AuthController {
   @Post('reset-password')
   async resetPassword(@Body() body: { newPassword: string }) {
     return this.authService.resetPassword(body.newPassword);
+  }
+
+  @UseGuards(SupabaseAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Get('me')
+  getProfile(@Req() req) {
+    const user = req.user;
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        roles: user.app_metadata?.roles || [],
+      },
+    };
   }
 }
