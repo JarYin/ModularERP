@@ -3,7 +3,9 @@ import { Controller, Post, Body, UseGuards, Get, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Roles } from './decorators/roles.decorator';
 import { SupabaseAuthGuard } from './supabase-auth.guard';
-import { RolesGuard } from './guards/roles.guard';
+import { RoleGuard } from './guards/roles.guard';
+import { JobPositions } from './decorators/positions.decorator';
+import { JobPositionGuard } from './guards/positions.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,9 +31,10 @@ export class AuthController {
     return this.authService.resetPassword(body.newPassword);
   }
 
-  @UseGuards(SupabaseAuthGuard, RolesGuard)
-  @Roles('admin')
   @Get('me')
+  @UseGuards(SupabaseAuthGuard, RoleGuard, JobPositionGuard)
+  @Roles('employee')
+  @JobPositions('hr_officer')
   getProfile(@Req() req) {
     const user = req.user;
     return {

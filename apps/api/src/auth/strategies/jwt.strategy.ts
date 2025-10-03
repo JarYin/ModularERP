@@ -19,8 +19,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // payload คือข้อมูลที่ถอดรหัสจาก JWT
     // Supabase จะใส่ข้อมูล user ไว้ในนี้ เช่น sub (user_id), email
     if (!payload.sub) {
-        throw new UnauthorizedException();
+      throw new UnauthorizedException();
     }
-    return { userId: payload.sub, email: payload.email }; // ข้อมูลนี้จะถูกใส่ไปใน request.user
+    return {
+      userId: payload.sub,
+      email: payload.email,
+      roles: payload.roles ?? [],
+      positions: payload.positions ?? [],
+    };
   }
 }

@@ -1,21 +1,20 @@
-// auth/roles.guard.ts
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/roles.decorator'
+import { POSITIONS_KEY } from '../decorators/positions.decorator';
 
 @Injectable()
-export class RoleGuard implements CanActivate {
+export class JobPositionGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<string[]>(ROLES_KEY, [
+    const requiredPositions = this.reflector.getAllAndOverride<string[]>(POSITIONS_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    if (!requiredRoles) return true;
+    if (!requiredPositions) return true;
 
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some((role) => user.roles?.includes(role));
+    return requiredPositions.some((pos) => user.positions?.includes(pos));
   }
 }
