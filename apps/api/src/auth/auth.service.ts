@@ -30,7 +30,6 @@ export class AuthService {
       .insert([
         {
           user_id: user.id,
-          org_id: null,
           email,
           first_name: firstName ?? null,
           last_name: lastName ?? null,

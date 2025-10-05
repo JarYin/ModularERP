@@ -34,14 +34,15 @@ export class AuthController {
   @Get('me')
   @UseGuards(SupabaseAuthGuard, RoleGuard, JobPositionGuard)
   @Roles('employee')
-  @JobPositions('hr_officer')
+  // @JobPositions('hr')
   getProfile(@Req() req) {
     const user = req.user;
     return {
       user: {
         id: user.id,
         email: user.email,
-        roles: user.app_metadata?.roles || [],
+        roles: user.roles || [],
+        all: user,
       },
     };
   }

@@ -7,8 +7,9 @@ export class ProfileController {
   @Get()
   getProfile(@Req() req) {
     const user = req.user;
+    console.log('Decoded user:', user);
 
-    const roles = user.app_metadata?.roles || []; // หรือ user.user_metadata?.roles
+    const roles = user['roles'] || [];
 
     return {
       user: {
