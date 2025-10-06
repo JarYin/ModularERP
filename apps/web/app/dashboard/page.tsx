@@ -29,7 +29,7 @@ export default function Dashboard() {
   return (
     <>
       <pre>{JSON.stringify(data, null, 2)}</pre>
-      <RoleGuard roles={['employee']}>
+      <RoleGuard roles={['employee','owner']}>
         <h1>Welcome Admin!</h1>
         <p>เฉพาะ user ที่มี role admin เท่านั้น</p>
       </RoleGuard>

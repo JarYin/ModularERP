@@ -14,4 +14,10 @@ export class OrganizationController {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         return this.organizationService.createOrganization(body, userId);
     }
+
+    @UseGuards(SupabaseAuthGuard)
+    @Post('get-by-id')
+    async getOrganizationById(@Req() req): Promise<Organization | null> {
+        return this.organizationService.getOrganizationById(req);
+    }
 }

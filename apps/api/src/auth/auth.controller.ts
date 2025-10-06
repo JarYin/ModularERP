@@ -33,7 +33,7 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(SupabaseAuthGuard, RoleGuard, JobPositionGuard)
-  @Roles('employee')
+  @Roles('employee','owner')
   // @JobPositions('hr')
   getProfile(@Req() req) {
     const user = req.user;

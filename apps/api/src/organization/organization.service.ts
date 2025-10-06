@@ -39,6 +39,37 @@ export class OrganizationService {
                 console.error("Failed to link user to org:", userOrg.error.message);
                 throw new Error(`Failed to link user to org: ${userOrg.error.message}`);
             }
+
+            const { data: ownerRole, error: ownerRoleError } = await this.supabaseService
+                .getClient()
+                .from('role')
+                .select('role_id')
+                .eq('name', 'owner')
+                .single();
+
+            if (ownerRoleError || !ownerRole) {
+                console.error("Failed to find 'owner' role:", ownerRoleError?.message || 'role not found');
+                throw new Error(`Failed to find 'owner' role: ${ownerRoleError?.message || 'role not found'}`);
+            }
+
+            const userRole = await this.supabaseService
+                .getClient()
+                .from('user_role')
+                .insert({
+                    id: randomUUID(),
+                    user_id: userId,
+                    org_id: orgId,
+                    role_id: ownerRole.role_id,
+                    assigned_by: userId,
+                    assigned_at: new Date(),
+                })
+                .select()
+                .single();
+
+            if (userRole.error) {
+                console.error("Failed to assign role to user:", userRole.error.message);
+                throw new Error(`Failed to assign role to user: ${userRole.error.message}`);
+            }
         }
 
         if (teamEmails && teamEmails.length > 0) {
@@ -65,6 +96,29 @@ export class OrganizationService {
             }
         }
 
+        return res.data;
+    }
+
+    async getOrganizationById(req): Promise<Organization | null> {
+        const userId = req.user.id;
+        console.log("Fetching organization for user ID:", userId);
+        const res = await this.supabaseService
+            .getClient()
+            .from('user_organization')
+            .select('*, organization(*)')
+            .eq('user_id', userId)
+            .single();
+
+        // if we got a joined row, replace res.data with the nested organization so the function returns Organization
+        if (res.data && (res.data as any).organization) {
+            (res as any).data = (res.data as any).organization;
+        } else if (!res.data) {
+            (res as any).data = null;
+        }
+        if (res.error) {
+            console.error("Failed to get organization:", res.error.message);
+            throw new Error(`Failed to get organization: ${res.error.message}`);
+        }
         return res.data;
     }
 }
