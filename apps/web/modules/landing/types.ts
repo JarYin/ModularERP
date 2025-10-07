@@ -28,4 +28,5 @@ export type Organization = {
   logo?: string | null;
   teamEmails?: string[];
   billing_customer_id?: string;
+  email: string[];
 };

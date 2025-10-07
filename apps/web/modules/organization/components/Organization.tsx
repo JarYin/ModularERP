@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Building2 } from 'lucide-react';
+import { Building2, Mail, Trash2, Plus } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   OrganizationProfileForm,
@@ -30,6 +30,8 @@ import { useEffect, useState } from 'react';
 import { selectOrganization } from '../api/organization';
 import { getSession } from '@/lib/session';
 import type { Organization } from '@/modules/landing/types';
+import { useFieldArray } from 'react-hook-form';
+import TeamMember from './team-member/TeamMember';
 
 export default function Organization() {
   const {
@@ -43,9 +45,15 @@ export default function Organization() {
     defaultValues: {
       industry: '',
       phone: '',
+      email: [],
     },
   });
   const [orgData, setOrgData] = useState<Organization | null>(null);
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'email',
+  });
 
   function onSubmit(data: OrganizationProfileForm) {
     console.log('Form submitted:', data);
@@ -56,12 +64,11 @@ export default function Organization() {
     async function fetchOrganization() {
       try {
         const response: Organization = await selectOrganization();
-        console.log('Organization data:', response);
         if (response) {
-          // แทนที่จะ setValue แยกหลายตัว ใช้ reset
           reset({
             industry: response.industry ?? '',
             phone: response.phone ?? '',
+            email: response.email.map((email) => ({ value: email })) || [],
           });
           setOrgData(response);
         }
@@ -74,114 +81,129 @@ export default function Organization() {
   }, [reset]);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">Organization Management</h1>
-      <p className="text-muted-foreground">
-        Manage your company profile, team members, and audit logs
-      </p>
+    <div className="p-8 max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight max-md:text-center">
+          Organization Management
+        </h1>
+        <p className="text-muted-foreground mt-2 max-md:text-center">
+          Manage your company profile, team members, and audit logs
+        </p>
+      </div>
 
-      <Card className="mt-4">
-        <CardHeader>
+      <Card className="border-border shadow-sm">
+        <CardHeader className="border-b bg-muted/30">
           <CardTitle>
-            <div className="flex gap-2 items-center">
-              <Building2 size={20} />
-              <h1>Company Profile</h1>
+            <div className="flex gap-3 items-center">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Building2 size={22} className="text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold">Company Profile</h2>
+                <CardDescription className="text-sm text-muted-foreground mt-1">
+                  Manage your organization&apos;s basic information and contact
+                  details
+                </CardDescription>
+              </div>
             </div>
-            <CardDescription>
-              <p className="text-sm text-muted-foreground mt-2">
-                Manage your organization&apos;s basic information
-              </p>
-            </CardDescription>
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="pt-8">
           {!orgData ? (
-            <div className="flex items-center justify-center py-6">
+            <div className="flex items-center justify-center py-12">
               <div
                 role="status"
                 aria-live="polite"
-                className="inline-flex items-center gap-3 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-md"
+                className="inline-flex items-center gap-3 px-5 py-3 bg-muted rounded-lg"
               >
-                <span className="w-4 h-4 border-2 border-t-transparent border-gray-500 dark:border-gray-300 rounded-full animate-spin" />
-                <span className="text-sm text-gray-700 dark:text-gray-200">
-                  Loading organization...
+                <span className="w-5 h-5 border-3 border-t-transparent border-primary rounded-full animate-spin" />
+                <span className="text-sm font-medium text-foreground">
+                  Loading organization data...
                 </span>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              {/* Company name + Email */}
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full">
-                  <Label htmlFor="companyName">Company Name</Label>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+              {/* Basic Information Section */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 pb-2 border-b">
+                    Basic Information
+                  </h3>
+                </div>
+
+                {/* Company Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="companyName" className="text-sm font-medium">
+                    Company Name <span className="text-destructive">*</span>
+                  </Label>
                   <Input
+                    id="companyName"
                     {...register('companyName')}
                     defaultValue={orgData?.name ?? ''}
+                    placeholder="Enter company name"
+                    className="h-11"
                   />
                   {errors.companyName && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                      <span className="font-medium">⚠</span>
                       {errors.companyName.message}
                     </p>
                   )}
                 </div>
-                <div className="w-full">
-                  <Label htmlFor="contactEmail">Contact Email</Label>
-                  <Input {...register('contactEmail')} />
-                  {errors.contactEmail && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.contactEmail.message}
-                    </p>
-                  )}
-                </div>
-              </div>
 
-              {/* Industry + Phone */}
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full">
-                  <Label htmlFor="industry">Industry</Label>
-                  <Controller
-                    name="industry"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        key={field.value}
-                        value={field.value || ''}
-                        onValueChange={(val) => field.onChange(val)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Industry" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Technology">Technology</SelectItem>
-                          <SelectItem value="Finance">Finance</SelectItem>
-                          <SelectItem value="Healthcare">Healthcare</SelectItem>
-                        </SelectContent>
-                      </Select>
+                {/* Industry & Phone in Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="industry" className="text-sm font-medium">
+                      Industry <span className="text-destructive">*</span>
+                    </Label>
+                    <Controller
+                      name="industry"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value || ''}
+                          onValueChange={(val) => field.onChange(val)}
+                        >
+                          <SelectTrigger className="h-11">
+                            <SelectValue placeholder="Select industry" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Technology">
+                              Technology
+                            </SelectItem>
+                            <SelectItem value="Finance">Finance</SelectItem>
+                            <SelectItem value="Healthcare">
+                              Healthcare
+                            </SelectItem>
+                            <SelectItem value="Manufacturing">
+                              Manufacturing
+                            </SelectItem>
+                            <SelectItem value="Retail">Retail</SelectItem>
+                            <SelectItem value="Education">Education</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.industry && (
+                      <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                        <span className="font-medium">⚠</span>
+                        {errors.industry.message}
+                      </p>
                     )}
-                  />
+                  </div>
 
-                  {errors.industry && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.industry.message}
-                    </p>
-                  )}
-                </div>
-                <div className="w-full">
-                  <Label
-                    htmlFor="phone"
-                    className="block text-sm font-medium text-gray-700 mb-1"
-                  >
-                    Phone Number
-                  </Label>
-
-                  <Controller
-                    key={orgData?.phone ?? 'phone-input'}
-                    name="phone"
-                    control={control}
-                    defaultValue={orgData?.phone ?? ''}
-                    render={({ field }) => (
-                      <div className="relative">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-sm font-medium">
+                      Phone Number <span className="text-destructive">*</span>
+                    </Label>
+                    <Controller
+                      name="phone"
+                      control={control}
+                      defaultValue={orgData?.phone ?? ''}
+                      render={({ field }) => (
                         <PhoneInput
                           {...field}
                           value={field.value ?? orgData?.phone ?? ''}
@@ -190,72 +212,192 @@ export default function Organization() {
                           international
                           withCountryCallingCode
                           id="phone"
-                          className="phone-input"
+                          className="phone-input h-11"
                         />
-                      </div>
+                      )}
+                    />
+                    {errors.phone && (
+                      <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                        <span className="font-medium">⚠</span>
+                        {errors.phone.message}
+                      </p>
                     )}
-                  />
+                  </div>
+                </div>
 
-                  {errors.phone && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.phone.message}
+                {/* Website */}
+                <div className="space-y-2">
+                  <Label htmlFor="website" className="text-sm font-medium">
+                    Website
+                  </Label>
+                  <Input
+                    id="website"
+                    {...register('website')}
+                    defaultValue={orgData?.website ?? ''}
+                    placeholder="https://www.example.com"
+                    className="h-11"
+                  />
+                  {errors.website && (
+                    <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                      <span className="font-medium">⚠</span>
+                      {errors.website.message}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Website + Address */}
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full">
-                  <Label htmlFor="website">Website</Label>
-                  <Input
-                    {...register('website')}
-                    defaultValue={orgData?.website ?? ''}
-                  />
-                  {errors.website && (
-                    <p className="text-sm text-red-500 mt-1">
-                      {errors.website.message}
-                    </p>
-                  )}
+              {/* Contact Information Section */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 pb-2 border-b">
+                    Contact Information
+                  </h3>
                 </div>
-                <div className="w-full">
-                  <Label htmlFor="address">Address</Label>
+
+                {/* Email Addresses */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium flex items-center gap-2">
+                      <Mail size={16} />
+                      Email Addresses
+                    </Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => append({ value: '' })}
+                      className="h-9"
+                    >
+                      <Plus size={16} className="mr-1" />
+                      Add Email
+                    </Button>
+                  </div>
+
+                  {fields.length === 0 && (
+                    <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-4 text-center border border-dashed">
+                      No email addresses added yet. Click &quot;Add Email&quot;
+                      to get started.
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {fields.map((field, index) => (
+                      <div key={field.id} className="flex items-start gap-3">
+                        <div className="flex-1">
+                          <Input
+                            {...register(`email.${index}.value` as const)}
+                            placeholder="email@example.com"
+                            className="h-11"
+                          />
+                          {errors.email?.[index] && (
+                            <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                              <span className="font-medium">⚠</span>
+                              {errors.email[index]?.message as string}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          onClick={() => remove(index)}
+                          className="h-11 w-11 shrink-0 hover:bg-destructive hover:text-destructive-foreground"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div className="space-y-2">
+                  <Label htmlFor="address" className="text-sm font-medium">
+                    Address
+                  </Label>
                   <Textarea
+                    id="address"
                     {...register('address')}
                     defaultValue={orgData?.address ?? ''}
+                    placeholder="Enter complete address"
+                    rows={3}
+                    className="resize-none"
                   />
                   {errors.address && (
-                    <p className="text-sm text-red-500 mt-1">
+                    <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                      <span className="font-medium">⚠</span>
                       {errors.address.message}
                     </p>
                   )}
                 </div>
               </div>
 
-              {/* Description */}
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  {...register('description')}
-                  defaultValue={orgData?.description ?? ''}
-                />
-                {errors.description && (
-                  <p className="text-sm text-red-500 mt-1">
-                    {errors.description.message}
-                  </p>
-                )}
+              {/* Additional Information Section */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold mb-4 pb-2 border-b">
+                    Additional Information
+                  </h3>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description" className="text-sm font-medium">
+                    Company Description
+                  </Label>
+                  <Textarea
+                    id="description"
+                    {...register('description')}
+                    defaultValue={orgData?.description ?? ''}
+                    placeholder="Brief description of your company and its services"
+                    rows={4}
+                    className="resize-none"
+                  />
+                  {errors.description && (
+                    <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                      <span className="font-medium">⚠</span>
+                      {errors.description.message}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <Button
-                type="submit"
-                variant="primary"
-                className="w-full cursor-pointer"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? 'Saving...' : 'Update company profile'}
-              </Button>
+              {/* Submit Button */}
+              <div className="pt-6 border-t">
+                <Button
+                  type="submit"
+                  variant={'primary'}
+                  className="w-full h-12 text-base font-medium"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <span className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin" />
+                      Saving changes...
+                    </span>
+                  ) : (
+                    'Update Company Profile'
+                  )}
+                </Button>
+              </div>
             </form>
           )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-border shadow-sm mt-8">
+        <CardHeader className="border-b bg-muted/30">
+          <CardTitle>
+            <div className="p-2 flex gap-3 items-center">
+              <Building2 size={22} className="text-primary" />
+              <h2 className="text-xl font-semibold">Team Members</h2>
+            </div>
+            <div className="text-sm text-muted-foreground mt-1">
+              Manage team members, roles, and permissions
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-8">
+          <TeamMember />
         </CardContent>
       </Card>
     </div>
