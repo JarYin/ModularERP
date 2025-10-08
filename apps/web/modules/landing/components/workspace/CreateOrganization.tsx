@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { TimezoneCombobox } from '@/modules/organization/components/TimezoneCombobox';
-import { currency } from '../../types';
+import { currency } from '@/lib/currency';
 import PhoneInput, { formatPhoneNumber } from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { CountryCode } from 'libphonenumber-js';

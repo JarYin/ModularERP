@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Building2, Mail, Trash2, Plus, UserRound } from 'lucide-react';
+import { Building2, Mail, Trash2, Plus, UserRound, Info } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   OrganizationProfileForm,
@@ -32,6 +32,13 @@ import { getSession } from '@/lib/session';
 import type { Organization } from '@/modules/landing/types';
 import { useFieldArray } from 'react-hook-form';
 import TeamMember from './team-member/TeamMember';
+import { currency } from '@/lib/currency';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 export default function Organization() {
   const {
@@ -267,6 +274,114 @@ export default function Organization() {
                       <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
                         <span className="font-medium">⚠</span>
                         {errors.phone.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="domain"
+                      className="text-sm font-medium flex items-center gap-1"
+                    >
+                      Company Domain{' '}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="h-4 text-blue-400 cursor-pointer" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>พนักงานในองค์กรจะได้ email นี้ในการเข้าสู่ระบบ เช่น employee@example.com</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </Label>
+                    <Input
+                      id="domain"
+                      {...register('domain')}
+                      defaultValue={orgData?.domain ?? ''}
+                      placeholder="example.com"
+                      className="h-11"
+                    />
+                    {errors.domain && (
+                      <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                        <span className="font-medium">⚠</span>
+                        {errors.domain.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="locale" className="text-sm font-medium">
+                      Locale
+                    </Label>
+                    <Input
+                      id="locale"
+                      {...register('locale')}
+                      defaultValue={orgData?.locale ?? ''}
+                      placeholder="en-US"
+                      className="h-11"
+                    />
+                    {errors.locale && (
+                      <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                        <span className="font-medium">⚠</span>
+                        {errors.locale.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="currency" className="text-sm font-medium">
+                      Currency
+                    </Label>
+                    <Controller
+                      name="currency"
+                      control={control}
+                      defaultValue={orgData?.currency ?? ''}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value || ''}
+                          onValueChange={(val) => field.onChange(val)}
+                        >
+                          <SelectTrigger className="h-11">
+                            <SelectValue placeholder="Select currency" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {currency.map((cur) => (
+                              <SelectItem key={cur} value={cur}>
+                                {cur}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.currency && (
+                      <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                        <span className="font-medium">⚠</span>
+                        {errors.currency.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Timezone */}
+                  <div className="space-y-2">
+                    <Label htmlFor="timezone" className="text-sm font-medium">
+                      Timezone
+                    </Label>
+                    <Input
+                      id="timezone"
+                      {...register('timezone')}
+                      defaultValue={orgData?.timezone ?? ''}
+                      placeholder="e.g., America/New_York"
+                      className="h-11"
+                    />
+                    {errors.timezone && (
+                      <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                        <span className="font-medium">⚠</span>
+                        {errors.timezone.message}
                       </p>
                     )}
                   </div>

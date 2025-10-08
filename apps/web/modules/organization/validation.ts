@@ -22,7 +22,18 @@ export const organizationProfileSchema = z.object(({
     }, "Invalid phone number!"),
   website: z.string().optional(),
   address: z.string().min(1, "address is required!"),
-  description: z.string().optional()
+  description: z.string().optional(),
+  domain: z.string().optional(),
+  locale: z.string().optional(),
+  currency: z.string().optional(),
+  logo: z
+    .object({
+      url: z.string(),
+      public_id: z.string(),
+    })
+    .nullable()
+    .optional(),
+    timezone: z.string().optional(),
 }));
 
 export type OrganizationProfileForm = z.infer<typeof organizationProfileSchema>;
