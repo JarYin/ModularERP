@@ -121,4 +121,23 @@ export class OrganizationService {
         }
         return res.data;
     }
+
+    async getUserOrganizations(orgId: string): Promise<Organization[]> {
+        const res = await this.supabaseService
+            .getClient()
+            .from('user_role')
+            .select(`
+                *,
+                user:user_id (*),
+                role:role_id (*)
+            `)
+            .eq('org_id', orgId);
+
+        if (res.error) {
+            console.error("Failed to get user organizations:", res.error.message);
+            throw new Error(`Failed to get user organizations: ${res.error.message}`);
+        }
+
+        return res.data || [];
+    }
 }

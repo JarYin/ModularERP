@@ -1,29 +1,24 @@
+"use client";
 import { columns } from './columns';
-import { TeamMemberType } from '../../type';
+import { TeamMemberType, UserRoleTeamMemberType } from '../../type';
 import { DataTable } from './data-table';
+import { useEffect, useState } from 'react';
+import { fetchUserOrganizations } from '../../api/organization';
 
 export default function TeamMember() {
-  const data: TeamMemberType[] = [
-    {
-      avatar: 'https://i.pravatar.cc/150?img=1',
-      name: 'John Doe',
-      email: 'john.doe@example.com',
-      role: 'Admin',
-      status: 'active',
-      lastLogin: '2023-10-01 10:00 AM',
-    },
-    {
-      avatar: 'https://i.pravatar.cc/150?img=2',
-      name: 'Jane Smith',
-      email: 'jane.smith@example.com',
-      role: 'User',
-      status: 'inactive',
-      lastLogin: '2023-09-30 09:30 AM',
-    },
-  ];
+  const [data, setData] = useState<UserRoleTeamMemberType[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetchUserOrganizations();
+      console.log('User Organizations:', response);
+      setData(response);
+    }
+    fetchData();
+  }, []);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <DataTable columns={columns} data={data} />
     </div>
   );

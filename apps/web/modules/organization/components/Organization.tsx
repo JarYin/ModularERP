@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Building2, Mail, Trash2, Plus } from 'lucide-react';
+import { Building2, Mail, Trash2, Plus, UserRound } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import {
   OrganizationProfileForm,
@@ -49,6 +49,7 @@ export default function Organization() {
     },
   });
   const [orgData, setOrgData] = useState<Organization | null>(null);
+  const [collapsed, setCollapsed] = useState(false);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -92,24 +93,70 @@ export default function Organization() {
       </div>
 
       <Card className="border-border shadow-sm">
-        <CardHeader className="border-b bg-muted/30">
-          <CardTitle>
-            <div className="flex gap-3 items-center">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Building2 size={22} className="text-primary" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold">Company Profile</h2>
-                <CardDescription className="text-sm text-muted-foreground mt-1">
-                  Manage your organization&apos;s basic information and contact
-                  details
-                </CardDescription>
-              </div>
+        <CardHeader
+          className="border-b bg-muted/30 "
+          role="button"
+          aria-expanded={!collapsed}
+        >
+          <div className="flex gap-3 items-center">
+            <div className="p-2 bg-blue-500/10 rounded-lg">
+              <Building2 size={22} className="text-blue-500" />
             </div>
-          </CardTitle>
+            <div>
+              <h2 className="text-xl font-semibold">Company Profile</h2>
+              <CardDescription className="text-sm text-muted-foreground mt-1">
+                Manage your organization&apos;s basic information and contact
+                details
+              </CardDescription>
+            </div>
+            <button
+              type="button"
+              onClick={() => setCollapsed((s) => !s)}
+              aria-label={
+                collapsed
+                  ? 'Expand company profile'
+                  : 'Collapse company profile'
+              }
+              className="flex items-center gap-2 text-sm px-3 py-2 rounded hover:bg-muted ml-auto"
+            >
+              <span className="select-none">
+                {collapsed ? 'Expand' : 'Collapse'}
+              </span>
+              {/* simple chevron svg that rotates */}
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                  transition: 'transform 180ms ease',
+                }}
+                aria-hidden
+              >
+                <path
+                  d="M6 9l6 6 6-6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
         </CardHeader>
 
-        <CardContent className="pt-8">
+        {/* animated collapse using max-height transition */}
+        <CardContent
+          className="pt-8"
+          style={{
+            maxHeight: collapsed ? '100px' : '2000px',
+            overflow: 'hidden',
+            transition: 'max-height 800ms ease',
+          }}
+          aria-hidden={collapsed}
+        >
           {!orgData ? (
             <div className="flex items-center justify-center py-12">
               <div
@@ -388,7 +435,9 @@ export default function Organization() {
         <CardHeader className="border-b bg-muted/30">
           <CardTitle>
             <div className="p-2 flex gap-3 items-center">
-              <Building2 size={22} className="text-primary" />
+              <div className="bg-blue-500/10 rounded-lg p-2">
+                <UserRound size={22} className="text-blue-500" />
+              </div>
               <h2 className="text-xl font-semibold">Team Members</h2>
             </div>
             <div className="text-sm text-muted-foreground mt-1">

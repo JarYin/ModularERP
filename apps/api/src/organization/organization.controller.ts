@@ -20,4 +20,11 @@ export class OrganizationController {
     async getOrganizationById(@Req() req): Promise<Organization | null> {
         return this.organizationService.getOrganizationById(req);
     }
+
+    @UseGuards(SupabaseAuthGuard)
+    @Post('get-by-organization')
+    async getOrganizationsByUser(@Req() req): Promise<Organization[]> {
+        const orgId: string = req.user.org_id;
+        return this.organizationService.getUserOrganizations(orgId);
+    }
 }
