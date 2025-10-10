@@ -622,8 +622,12 @@ export default function Organization() {
 
                 <div className="space-y-2">
                   <Collapsible>
-                    <CollapsibleTrigger onClick={() => setSocialCollapsed(!socialCollapsed)} className="w-full text-left cursor-pointer font-medium flex items-center gap-2 rounded py-2">
-                      Social Media Contact {socialCollapsed ? (
+                    <CollapsibleTrigger
+                      onClick={() => setSocialCollapsed(!socialCollapsed)}
+                      className="w-full text-left cursor-pointer font-medium flex items-center gap-2 rounded py-2"
+                    >
+                      Social Media Contact{' '}
+                      {socialCollapsed ? (
                         <svg
                           width="16"
                           height="16"
@@ -631,7 +635,9 @@ export default function Organization() {
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                           style={{
-                            transform: socialCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                            transform: socialCollapsed
+                              ? 'rotate(-90deg)'
+                              : 'rotate(0deg)',
                             transition: 'transform 180ms ease',
                           }}
                           aria-hidden
@@ -652,7 +658,9 @@ export default function Organization() {
                           fill="none"
                           xmlns="http://www.w3.org/2000/svg"
                           style={{
-                            transform: socialCollapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+                            transform: socialCollapsed
+                              ? 'rotate(0deg)'
+                              : 'rotate(90deg)',
                             transition: 'transform 180ms ease',
                           }}
                           aria-hidden
@@ -671,6 +679,8 @@ export default function Organization() {
                       <div>
                         <Label htmlFor="facebook">Facebook</Label>
                         <Input
+                          {...register('facebook')}
+                          defaultValue={orgData?.facebook ?? ''}
                           id="facebook"
                           placeholder="Facebook URL"
                           className="h-11 mt-1"
@@ -679,6 +689,8 @@ export default function Organization() {
                       <div className="mt-4">
                         <Label htmlFor="twitter">Twitter</Label>
                         <Input
+                          {...register('twitter')}
+                          defaultValue={orgData?.twitter ?? ''}
                           id="twitter"
                           placeholder="Twitter URL"
                           className="h-11 mt-1"
@@ -687,6 +699,8 @@ export default function Organization() {
                       <div className="mt-4">
                         <Label htmlFor="instagram">Instagram</Label>
                         <Input
+                          {...register('instagram')}
+                          defaultValue={orgData?.instagram ?? ''}
                           id="instagram"
                           placeholder="Instagram URL"
                           className="h-11 mt-1"
@@ -695,6 +709,8 @@ export default function Organization() {
                       <div className="mt-4">
                         <Label htmlFor="line">Line Official Account</Label>
                         <Input
+                          {...register('line')}
+                          defaultValue={orgData?.line ?? ''}
                           id="line"
                           placeholder="Line URL"
                           className="h-11 mt-1"

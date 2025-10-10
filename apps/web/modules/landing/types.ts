@@ -29,4 +29,8 @@ export type Organization = {
   teamEmails?: string[];
   billing_customer_id?: string;
   email: string[];
+  facebook?: string;
+  twitter?: string;
+  instagram?: string;
+  line?: string;
 };

@@ -30,6 +30,10 @@ export const organizationProfileSchema = z.object(({
   domain: z.string().optional(),
   locale: z.string().optional(),
   currency: z.string().optional(),
+  facebook: z.string().optional(),
+  twitter: z.string().optional(),
+  instagram: z.string().optional(),
+  line: z.string().optional(),
   logo: z
     .object({
       url: z.string(),
@@ -37,7 +41,8 @@ export const organizationProfileSchema = z.object(({
     })
     .nullable()
     .optional(),
-    timezone: z.string().optional(),
-}));
+  timezone: z.string().optional(),
+})
+);
 
 export type OrganizationProfileForm = z.infer<typeof organizationProfileSchema>;
