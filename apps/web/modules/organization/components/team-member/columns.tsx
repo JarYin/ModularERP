@@ -19,7 +19,7 @@ export const columns: ColumnDef<UserRoleTeamMemberType>[] = [
         />
         <div className='flex-col'>
           <h3>{row.original.user.first_name} {row.original.user.last_name}</h3>
-          <p className="text-muted-foreground">{row.original.user.email}</p>
+          <p className="text-muted-foreground text-xs">{row.original.user.email}</p>
         </div>
       </div>
     ),

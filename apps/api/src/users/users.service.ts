@@ -12,6 +12,7 @@ export class UsersService {
             .from('user_organization')
             .select('user_id, org_id')
             .eq('user_id', userId)
+            .eq('is_active', true)
             .maybeSingle();
 
         if (error) throw new Error(error.message);

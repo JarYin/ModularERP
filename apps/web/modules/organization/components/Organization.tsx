@@ -39,6 +39,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import {
+  Collapsible,
+  CollapsiblePanel,
+  CollapsibleTrigger,
+} from '@/components/animate-ui/primitives/base/collapsible';
 
 export default function Organization() {
   const {
@@ -51,12 +56,21 @@ export default function Organization() {
     resolver: zodResolver(organizationProfileSchema),
     defaultValues: {
       industry: '',
-      phone: '',
+      phone: [{ value: '' }],
       email: [],
     },
   });
   const [orgData, setOrgData] = useState<Organization | null>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const [socialCollapsed, setSocialCollapsed] = useState(false);
+  const {
+    fields: phoneFields,
+    append: appendPhone,
+    remove: removePhone,
+  } = useFieldArray({
+    control,
+    name: 'phone',
+  });
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -73,10 +87,13 @@ export default function Organization() {
       try {
         const response: Organization = await selectOrganization();
         if (response) {
+          const phoneValue = Array.isArray(response.phone)
+            ? response.phone[0] ?? ''
+            : response.phone ?? '';
           reset({
             industry: response.industry ?? '',
-            phone: response.phone ?? '',
-            email: response.email.map((email) => ({ value: email })) || [],
+            phone: [{ value: phoneValue }],
+            email: (response.email || []).map((email) => ({ value: email })),
           });
           setOrgData(response);
         }
@@ -105,16 +122,20 @@ export default function Organization() {
           role="button"
           aria-expanded={!collapsed}
         >
-          <div className="flex gap-3 items-center">
-            <div className="p-2 bg-blue-500/10 rounded-lg">
-              <Building2 size={22} className="text-blue-500" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold">Company Profile</h2>
-              <CardDescription className="text-sm text-muted-foreground mt-1">
-                Manage your organization&apos;s basic information and contact
-                details
-              </CardDescription>
+          <div className="flex flex-col md:flex-row gap-3 items-center">
+            <div className="flex w-full flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+              <div className="p-2 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Building2 size={22} className="text-blue-500" />
+              </div>
+              <div className="w-full text-center sm:text-left">
+                <h2 className="text-lg sm:text-xl font-semibold">
+                  Company Profile
+                </h2>
+                <CardDescription className="text-sm text-muted-foreground mt-1">
+                  Manage your organization&apos;s basic information and contact
+                  details
+                </CardDescription>
+              </div>
             </div>
             <button
               type="button"
@@ -124,7 +145,7 @@ export default function Organization() {
                   ? 'Expand company profile'
                   : 'Collapse company profile'
               }
-              className="flex items-center gap-2 text-sm px-3 py-2 rounded hover:bg-muted ml-auto"
+              className="flex items-center gap-2 text-sm px-3 py-2 rounded hover:bg-muted md:ml-auto"
             >
               <span className="select-none">
                 {collapsed ? 'Expand' : 'Collapse'}
@@ -208,7 +229,7 @@ export default function Organization() {
                 </div>
 
                 {/* Industry & Phone in Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="industry" className="text-sm font-medium">
                       Industry <span className="text-destructive">*</span>
@@ -248,39 +269,10 @@ export default function Organization() {
                       </p>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-sm font-medium">
-                      Phone Number <span className="text-destructive">*</span>
-                    </Label>
-                    <Controller
-                      name="phone"
-                      control={control}
-                      defaultValue={orgData?.phone ?? ''}
-                      render={({ field }) => (
-                        <PhoneInput
-                          {...field}
-                          value={field.value ?? orgData?.phone ?? ''}
-                          onChange={(val) => field.onChange(val)}
-                          defaultCountry="US"
-                          international
-                          withCountryCallingCode
-                          id="phone"
-                          className="phone-input h-11"
-                        />
-                      )}
-                    />
-                    {errors.phone && (
-                      <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
-                        <span className="font-medium">⚠</span>
-                        {errors.phone.message}
-                      </p>
-                    )}
-                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label
                       htmlFor="domain"
                       className="text-sm font-medium flex items-center gap-1"
@@ -292,7 +284,10 @@ export default function Organization() {
                             <Info className="h-4 text-blue-400 cursor-pointer" />
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>พนักงานในองค์กรจะได้ email นี้ในการเข้าสู่ระบบ เช่น employee@example.com</p>
+                            <p>
+                              พนักงานในองค์กรจะได้ email นี้ในการเข้าสู่ระบบ
+                              เช่น employee@example.com
+                            </p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -416,6 +411,109 @@ export default function Organization() {
                   </h3>
                 </div>
 
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium flex items-center justify-between">
+                    <span>
+                      Phone Numbers <span className="text-destructive">*</span>
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => appendPhone({ value: '' })}
+                      className="h-9"
+                    >
+                      <Plus size={16} className="mr-1" />
+                      Add Phone
+                    </Button>
+                  </Label>
+
+                  {/* Single fallback when no phoneFields present (keeps backwards compatibility) */}
+                  {!phoneFields || phoneFields.length === 0 ? (
+                    <div>
+                      <Controller
+                        name="phone.0.value"
+                        control={control}
+                        defaultValue={
+                          Array.isArray(orgData?.phone)
+                            ? orgData.phone[0] ?? ''
+                            : orgData?.phone ?? ''
+                        }
+                        render={({ field }) => (
+                          <PhoneInput
+                            {...field}
+                            value={
+                              field.value ??
+                              (Array.isArray(orgData?.phone)
+                                ? orgData.phone[0] ?? ''
+                                : orgData?.phone ?? '')
+                            }
+                            onChange={(val) => field.onChange(val)}
+                            defaultCountry="US"
+                            international
+                            withCountryCallingCode
+                            id="phone"
+                            className="phone-input h-11"
+                          />
+                        )}
+                      />
+                      {errors.phone && !Array.isArray(errors.phone) && (
+                        <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                          <span className="font-medium">⚠</span>
+                          {errors.phone.message}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {phoneFields.map((f, index) => (
+                        <div key={f.id} className="flex items-start gap-3">
+                          <div className="flex-1">
+                            <Controller
+                              name={`phone.${index}.value`}
+                              control={control}
+                              defaultValue={
+                                Array.isArray(orgData?.phone)
+                                  ? orgData.phone[index] ?? ''
+                                  : index === 0
+                                    ? orgData?.phone ?? ''
+                                    : ''
+                              }
+                              render={({ field }) => (
+                                <PhoneInput
+                                  {...field}
+                                  value={field.value ?? ''}
+                                  onChange={(val) => field.onChange(val)}
+                                  defaultCountry="US"
+                                  international
+                                  withCountryCallingCode
+                                  id={`phone-${index}`}
+                                  className="phone-input h-11"
+                                />
+                              )}
+                            />
+                            {errors.phone?.[index] && (
+                              <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
+                                <span className="font-medium">⚠</span>
+                                {errors.phone[index]?.message as string}
+                              </p>
+                            )}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => removePhone(index)}
+                            className="h-11 w-11 shrink-0 hover:bg-destructive hover:text-destructive-foreground"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {/* Email Addresses */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -521,6 +619,90 @@ export default function Organization() {
                     </p>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <Collapsible>
+                    <CollapsibleTrigger onClick={() => setSocialCollapsed(!socialCollapsed)} className="w-full text-left cursor-pointer font-medium flex items-center gap-2 rounded py-2">
+                      Social Media Contact {socialCollapsed ? (
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            transform: socialCollapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
+                            transition: 'transform 180ms ease',
+                          }}
+                          aria-hidden
+                        >
+                          <path
+                            d="M6 9l6 6 6-6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            transform: socialCollapsed ? 'rotate(0deg)' : 'rotate(90deg)',
+                            transition: 'transform 180ms ease',
+                          }}
+                          aria-hidden
+                        >
+                          <path
+                            d="M6 9l6 6 6-6"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </CollapsibleTrigger>
+                    <CollapsiblePanel>
+                      <div>
+                        <Label htmlFor="facebook">Facebook</Label>
+                        <Input
+                          id="facebook"
+                          placeholder="Facebook URL"
+                          className="h-11 mt-1"
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <Label htmlFor="twitter">Twitter</Label>
+                        <Input
+                          id="twitter"
+                          placeholder="Twitter URL"
+                          className="h-11 mt-1"
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <Label htmlFor="instagram">Instagram</Label>
+                        <Input
+                          id="instagram"
+                          placeholder="Instagram URL"
+                          className="h-11 mt-1"
+                        />
+                      </div>
+                      <div className="mt-4">
+                        <Label htmlFor="line">Line Official Account</Label>
+                        <Input
+                          id="line"
+                          placeholder="Line URL"
+                          className="h-11 mt-1"
+                        />
+                      </div>
+                    </CollapsiblePanel>
+                  </Collapsible>
+                </div>
               </div>
 
               {/* Submit Button */}
@@ -549,14 +731,27 @@ export default function Organization() {
       <Card className="border-border shadow-sm mt-8">
         <CardHeader className="border-b bg-muted/30">
           <CardTitle>
-            <div className="p-2 flex gap-3 items-center">
-              <div className="bg-blue-500/10 rounded-lg p-2">
-                <UserRound size={22} className="text-blue-500" />
+            <div className="flex flex-col md:flex-row items-center">
+              <div className="flex-col">
+                <div className="p-2 flex gap-3 items-center">
+                  <div className="bg-blue-500/10 rounded-lg p-2">
+                    <UserRound size={22} className="text-blue-500" />
+                  </div>
+                  <h2 className="text-xl font-semibold">Team Members</h2>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1 text-center md:text-left">
+                  Manage team members, roles, and permissions
+                </div>
               </div>
-              <h2 className="text-xl font-semibold">Team Members</h2>
-            </div>
-            <div className="text-sm text-muted-foreground mt-1">
-              Manage team members, roles, and permissions
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 md:ml-auto mt-2 md:mt-0"
+              >
+                <Plus size={16} className="mr-1" />
+                Add Team Member
+              </Button>
             </div>
           </CardTitle>
         </CardHeader>

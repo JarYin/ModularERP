@@ -107,6 +107,7 @@ export class OrganizationService {
             .from('user_organization')
             .select('*, organization(*)')
             .eq('user_id', userId)
+            .eq('is_active', true)
             .single();
 
         // if we got a joined row, replace res.data with the nested organization so the function returns Organization

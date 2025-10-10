@@ -10,16 +10,20 @@ export const organizationProfileSchema = z.object(({
   ),
   industry: z.string().nonempty("Industry is required!"),
   phone: z
-    .string()
-    .refine((val) => {
-      if (!val) return false;
-      try {
-        const parsed = parsePhoneNumber(val);
-        return parsed?.isValid();
-      } catch {
-        return false;
-      }
-    }, "Invalid phone number!"),
+    .array(
+      z.object({
+        value: z.string().refine((val) => {
+          if (!val) return false;
+          try {
+            const parsed = parsePhoneNumber(val);
+            return parsed?.isValid();
+          } catch {
+            return false;
+          }
+        }, "Invalid phone number!"),
+      })
+    )
+    .min(1, "Phone number is required!"),
   website: z.string().optional(),
   address: z.string().min(1, "address is required!"),
   description: z.string().optional(),
