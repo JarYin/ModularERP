@@ -27,8 +27,7 @@ import { Button } from '@/components/ui/button';
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
 import { useEffect, useState } from 'react';
-import { selectOrganization } from '../api/organization';
-import { getSession } from '@/lib/session';
+import { selectOrganization, updateOrganization } from '../api/organization';
 import type { Organization } from '@/modules/landing/types';
 import { useFieldArray } from 'react-hook-form';
 import TeamMember from './team-member/TeamMember';
@@ -44,6 +43,7 @@ import {
   CollapsiblePanel,
   CollapsibleTrigger,
 } from '@/components/animate-ui/primitives/base/collapsible';
+import { toast } from 'sonner';
 
 export default function Organization() {
   const {
@@ -77,9 +77,25 @@ export default function Organization() {
     name: 'email',
   });
 
-  function onSubmit(data: OrganizationProfileForm) {
+  async function onSubmit(data: OrganizationProfileForm) {
     console.log('Form submitted:', data);
-    console.log('session: ', getSession());
+    try {
+      const response = await updateOrganization(data);
+      if (response) {
+        toast.success('Organization updated successfully!', {
+          position: 'top-right',
+          style: {
+            '--normal-bg': 'var(--background)',
+            '--normal-text':
+              'light-dark(var(--color-green-600), var(--color-green-400))',
+            '--normal-border':
+              'light-dark(var(--color-green-600), var(--color-green-400))',
+          } as React.CSSProperties,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to update organization', error);
+    }
   }
 
   useEffect(() => {
@@ -87,12 +103,11 @@ export default function Organization() {
       try {
         const response: Organization = await selectOrganization();
         if (response) {
-          const phoneValue = Array.isArray(response.phone)
-            ? response.phone[0] ?? ''
-            : response.phone ?? '';
           reset({
             industry: response.industry ?? '',
-            phone: [{ value: phoneValue }],
+            phone: Array.isArray(response.phone)
+              ? response.phone.map((p) => ({ value: p }))
+              : [{ value: response.phone ?? '' }],
             email: (response.email || []).map((email) => ({ value: email })),
           });
           setOrgData(response);
@@ -215,15 +230,15 @@ export default function Organization() {
                   </Label>
                   <Input
                     id="companyName"
-                    {...register('companyName')}
+                    {...register('name')}
                     defaultValue={orgData?.name ?? ''}
                     placeholder="Enter company name"
                     className="h-11"
                   />
-                  {errors.companyName && (
+                  {errors.name && (
                     <p className="text-sm text-destructive flex items-center gap-1 mt-1.5">
                       <span className="font-medium">⚠</span>
-                      {errors.companyName.message}
+                      {errors.name.message}
                     </p>
                   )}
                 </div>

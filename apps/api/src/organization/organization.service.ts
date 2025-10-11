@@ -9,7 +9,7 @@ export class OrganizationService {
 
     async createOrganization(data: Organization, userId: string): Promise<Organization> {
         // Exclude 'logo' property if present
-        const { logo, teamEmails, ...dataWithoutLogo } = data;
+        const { logo, email, ...dataWithoutLogo } = data;
         const res = await this.supabaseService
             .getClient()
             .from('organization')
@@ -72,15 +72,15 @@ export class OrganizationService {
             }
         }
 
-        if (teamEmails && teamEmails.length > 0) {
-            for (const email of teamEmails) {
+        if (email && email.length > 0) {
+            for (const e of email) {
                 const token = randomUUID();
 
                 const { data, error } = await this.supabaseService.getClient()
                     .from('invitation')
                     .insert({
                         org_id: orgId,
-                        email,
+                        email: e,
                         invited_by: userId,
                         role_suggestion: "member",
                         token,
@@ -140,5 +140,36 @@ export class OrganizationService {
         }
 
         return res.data || [];
+    }
+
+    async updateOrganization(orgId: string, updates: Partial<Organization>): Promise<Organization | null> {
+        const normalizedUpdates = {
+            ...updates,
+            email: Array.isArray(updates?.email)
+                ? updates.email
+                    .map((e: any) => (typeof e === 'string' ? e : e?.value))
+                    .filter(Boolean) // เอา undefined / null ออก
+                : updates?.email,
+            phone: Array.isArray(updates?.phone)
+                ? updates.phone
+                    .map((p: any) => (typeof p === 'string' ? p : p?.value))
+                    .filter(Boolean)
+                : updates?.phone,
+        };
+
+        const res = await this.supabaseService
+            .getClient()
+            .from('organization')
+            .update(normalizedUpdates)
+            .eq('org_id', orgId)
+            .select()
+            .single();
+
+        if (res.error) {
+            console.error("Failed to update organization:", res.error.message);
+            throw new Error(`Failed to update organization: ${res.error.message}`);
+        }
+
+        return res.data;
     }
 }

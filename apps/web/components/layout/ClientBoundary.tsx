@@ -2,6 +2,7 @@
 import Head from 'next/head';
 import { menuItems, Navbar, Sidebar, subMenuItems } from '../../components/layout/Dashboard';
 import { usePathname } from 'next/navigation';
+import { Toaster } from '../ui/sonner';
 
 export default function ClientBoundary({
   children,
@@ -30,6 +31,7 @@ export default function ClientBoundary({
           <main className="flex-1 overflow-auto" role="main">
             {children}
           </main>
+          <Toaster />
         </div>
       </div>
     </>

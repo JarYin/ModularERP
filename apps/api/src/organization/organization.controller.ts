@@ -27,4 +27,11 @@ export class OrganizationController {
         const orgId: string = req.user.org_id;
         return this.organizationService.getUserOrganizations(orgId);
     }
+
+    @UseGuards(SupabaseAuthGuard)
+    @Post('update')
+    async updateOrganization(@Body() body: Partial<Organization>, @Req() req): Promise<Organization | null> {
+        const orgId: string = req.user.org_id;
+        return this.organizationService.updateOrganization(orgId, body);
+    }
 }

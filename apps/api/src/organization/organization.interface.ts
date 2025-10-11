@@ -13,14 +13,14 @@ export const currency = [
 
 
 export interface Organization {
-  id: string;
+  org_id: string;
   name: string;
   description?: string;
   website?: string;
   industry: string;
   domain?: string;
   currency: typeof currency[number];
-  phone?: string;
+  phone?: string[];
   locale: string;
   timezone: string;
   subscription_plan?: string;
@@ -28,6 +28,6 @@ export interface Organization {
   status: string;
   address?: string;
   logo?: string | null;
-  teamEmails?: string[];
+  email?: string[];
   billing_customer_id?: string;
 }
