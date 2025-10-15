@@ -5,9 +5,9 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import { LocalStrategy } from './strategies/local.strategy';
-import { PassportAuthController } from './passport.auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { SupabaseService } from 'src/supabase/supabase.service';
+import { SupabaseModule } from 'src/supabase/supabase.module';
 
 @Module({
   imports: [
@@ -22,10 +22,11 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         secret: configService.get<string>('JWT_SECRET'),
         signOptions: { expiresIn: '1d' }
       }),
-    })
+    }),
+    SupabaseModule
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, JwtStrategy, SupabaseService],
   exports: [],
-  controllers: [AuthController, PassportAuthController]
+  controllers: [AuthController]
 })
 export class AuthModule {}

@@ -1,0 +1,127 @@
+{
+  "HomePage": {
+    "title": {
+      "title-1": "Streamline Your Business",
+      "title-2": "Operations with Our",
+      "title-3": "Modular",
+      "title-4": "ERP Solution",
+      "title-5": "Everything You Need to Run Your Business"
+    },
+    "description": {
+      "desc-1": "Flexible, scalable, and built for the future. Choose only the modules you need",
+      "desc-2": "and scale as you grow.",
+      "desc-3": "Unlock new efficiencies with our tailored modules designed for your unique needs.",
+      "CRM": {
+        "desc-1": "Manage customer relationships and track sales",
+        "desc-2": "pipeline with powerful automation tools."
+      },
+      "InventoryManagement": {
+        "desc-1": "Real-time inventory tracking with automated",
+        "desc-2": "reordering and warehouse management."
+      },
+      "HR&Payroll": {
+        "desc-1": "Complete human resources management with",
+        "desc-2": "payroll, benefits, and performance tracking."
+      },
+      "Accounting&Finance": {
+        "desc-1": "Full accounting suite with invoicing, expense",
+        "desc-2": "tracking, and financial reporting."
+      },
+      "PointOfSale": {
+        "desc-1": "Modern POS system with multi-location support",
+        "desc-2": "and integrated payment processing."
+      },
+      "Analytics&Reporting": {
+        "desc-1": "Advanced business intelligence with customizable",
+        "desc-2": "dashboards and real-time insights."
+      },
+      "desc-4": "Are you ready to transform your business?",
+      "desc-5": "Join the ModularERP to revolutionize your business management at every step."
+    },
+    "button": {
+      "title-1": "Explore Our Module Marketplace",
+      "title-2": "Start Free Trial"
+    }
+  },
+  "Navbar": {
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
+  "LandingPage": { "welcome": "Welcome!" },
+  "SignIn": {
+    "title": "Welcome back",
+    "title-signup": "Create your account",
+    "subtitle": {
+      "sub-1": "Sign in to your account to continue",
+      "sub-2": "Or continue with email",
+      "sub-3": "Don't have an account?",
+      "sub-4": "Sign up",
+      "sub-5": "Sign In",
+      "sub-6": "Already have an account?"
+    },
+    "InputForm": {
+      "email": "Email address",
+      "password": "Password",
+      "forgotPassword": "Forgot password?",
+      "rememberMe": "Remember me",
+      "placeholder": {
+        "email": "Enter your email",
+        "password": "Enter your password",
+        "firstName": "Enter your firstname",
+        "lastName": "Enter your lastname"
+      },
+      "confirmPassword": "Confirm Password",
+      "firstName": "FirstName",
+      "lastName": "LastName"
+    },
+    "button": {
+      "button-1": "Continue with Google",
+      "button-2": "Sign In",
+      "button-3": "Sign Up"
+    },
+    "error": {
+      "errorInvalidLogin": "Invalid email or password"
+    }
+  },
+  "ForgotPassword": {
+    "title": "Reset your password",
+    "subtitle": {
+      "sub-1": "Enter the email address associated with your account. We will send a secure link to reset your password."
+    },
+    "label": {
+      "email": "Email address",
+      "requestSent": "Request sent",
+      "unableRequest": "Unable to process request",
+      "DidntReceiveEmail": "Didn’t receive the email?",
+      "tryAgain": "Try again"
+    },
+    "loading": {
+      "load-1": "Sending…",
+      "load-2": "Send reset link"
+    },
+    "description": {
+      "desc-1": "For security reasons the reset link expires after a short time. If you need additional assistance, contact support."
+    }
+  },
+  "ResetPassword": {
+    "title": "Reset your password",
+    "subtitle": {
+      "sub-1": "Choose a new password for your account."
+    },
+    "label": {
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password"
+    },
+    "button": {
+      "button-1": "Reset password"
+    },
+    "description": {
+      "desc-1": "Tip: This page is only valid if you accessed it from the reset link in your email."
+    },
+    "error": {
+      "newPassword": "Password must be at least 8 characters",
+      "confirmPassword": "Please confirm your password"
+    },
+    "success": "Password reset successfully. You may now sign in."
+  }
+}

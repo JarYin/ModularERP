@@ -7,12 +7,17 @@ import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
+import { SupabaseService } from './supabase/supabase.service';
+import { SupabaseModule } from './supabase/supabase.module';
+import { ProfileModule } from './profile/profile.module';
+import { OrganizationModule } from './organization/organization.module';
+import { InvitationsModule } from './invitations/invitations.module';
 
 @Module({
   imports: [LinksModule, AuthModule, ConfigModule.forRoot({
     isGlobal: true,
-  }), UsersModule],
+  }), UsersModule, SupabaseModule, ProfileModule, OrganizationModule, InvitationsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, SupabaseService],
 })
-export class AppModule {}
+export class AppModule { }

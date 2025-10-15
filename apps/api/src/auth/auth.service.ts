@@ -1,38 +1,92 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
-
-type AuthInput = { email: string, password: string };
-type SignInData = { userId: number, email: string };
-type AuthToken = { accessToken: string, userId: number, email: string };
+// src/auth/auth.service.ts
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { SupabaseService } from '../supabase/supabase.service';
 
 @Injectable()
 export class AuthService {
-    constructor(private usersService: UsersService, private jwtService: JwtService) {}
+  constructor(private readonly supabaseService: SupabaseService) { }
 
-    async authenticate(input: AuthInput): Promise<AuthToken> {
-        const user = await this.validateUser(input);
-        if(!user) {
-            throw new UnauthorizedException()
-        }
-        return this.signIn(user);
+  async signUp(email: string, password: string, firstName: string,
+    lastName: string,) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error("Supabase error:", error);
+      throw new BadRequestException(error.message);
     }
 
-    async validateUser(input: AuthInput): Promise<SignInData | null> {
-        const user = await this.usersService.findByEmail(input.email);
-        if (user && user.password === input.password) {
-            return { userId: user.userId, email: user.email };
-        }
-        return null;
+    const user = data.user;
+
+    if (!user) {
+      throw new BadRequestException("User creation failed");
     }
 
-    async signIn(user: SignInData): Promise<AuthToken> {
-        const tokenPayload = {
-            sub: user.userId,
-            email: user.email
-        }
+    const { error: profileError } = await supabase
+      .from("user_account")
+      .insert([
+        {
+          user_id: user.id,
+          email,
+          first_name: firstName ?? null,
+          last_name: lastName ?? null,
+          is_active: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+      ]);
 
-        const accessToken = await this.jwtService.signAsync(tokenPayload);
-        return { accessToken, userId: user.userId, email: user.email };
+    if (profileError) {
+      console.error("Insert profile error:", profileError);
+      throw new BadRequestException(profileError.message);
     }
+
+    return {
+      message: "User created successfully",
+      user,
+    };
+  }
+
+  async signIn(email: string, password: string) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      throw new UnauthorizedException(error.message);
+    }
+
+    return {
+      access_token: data.session?.access_token,
+      refresh_token: data.session?.refresh_token,
+      user: data.user,
+    };
+  }
+
+  async forgotPassword(email: string) {
+    const supabase = this.supabaseService.getClient();
+    const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+      // eslint-disable-next-line turbo/no-undeclared-env-vars
+      redirectTo: `${process.env.NEXT_PUBLIC_FRONTEND_URL}/signin/resetPassword`,
+    });
+
+    if (error) throw error;
+    return { message: "Reset password email sent", data: data };
+  }
+
+  async resetPassword(newPassword: string) {
+    const supabase = this.supabaseService.getClient();
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+    })
+
+    if (error) throw error;
+    return { message: "Password updated successfully" };
+  }
+
 }
