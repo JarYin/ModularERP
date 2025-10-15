@@ -27,7 +27,6 @@ import {
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { destroySession } from '@/lib/session';
 import ProfileMenu from '../ui/profile-menu';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
@@ -97,6 +96,7 @@ export const Sidebar = () => {
       router.push('/');
     }
   };
+
 
   return (
     <>
@@ -174,7 +174,7 @@ export const Sidebar = () => {
                 {!collapsed && (
                   <div className="ml-3">
                     <p className="font-semibold text-sm text-gray-800">
-                      Acme Corp
+                      Acme Inc.
                     </p>
                   </div>
                 )}
