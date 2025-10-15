@@ -42,6 +42,7 @@ export default function CreateOrganization() {
   const [teamEmail, setTeamEmail] = useState('');
   const [formData, setFormData] = useState({
     name: '',
+    email: [],
     description: '',
     website: '',
     industry: '',
