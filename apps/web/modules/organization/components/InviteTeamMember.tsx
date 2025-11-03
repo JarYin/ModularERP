@@ -18,32 +18,11 @@ import {
 import { cn } from '@/lib/utils';
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react';
 import { useState } from 'react';
+import { roles } from '../constants/roles';
 
 export default function InviteTeamMember() {
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState('');
-  const frameworks = [
-  {
-    value: "next.js",
-    label: "Next.js",
-  },
-  {
-    value: "sveltekit",
-    label: "SvelteKit",
-  },
-  {
-    value: "nuxt.js",
-    label: "Nuxt.js",
-  },
-  {
-    value: "remix",
-    label: "Remix",
-  },
-  {
-    value: "astro",
-    label: "Astro",
-  },
-]
   return (
     <>
       <form className="grid gap-4 py-2">
@@ -72,22 +51,21 @@ export default function InviteTeamMember() {
                 className="w-full justify-between"
               >
                 {value
-                  ? frameworks.find((framework) => framework.value === value)
-                      ?.label
-                  : 'Select framework...'}
+                  ? roles.find((role) => role.value === value)?.label
+                  : 'Select role...'}
                 <ChevronsUpDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
               <Command>
-                <CommandInput placeholder="Search framework..." />
+                <CommandInput placeholder="Search role..." />
                 <CommandList>
-                  <CommandEmpty>No framework found.</CommandEmpty>
+                  <CommandEmpty>No role found.</CommandEmpty>
                   <CommandGroup>
-                    {frameworks.map((framework) => (
+                    {roles.map((role) => (
                       <CommandItem
-                        key={framework.value}
-                        value={framework.value}
+                        key={role.value}
+                        value={role.value}
                         onSelect={(currentValue) => {
                           setValue(currentValue === value ? '' : currentValue);
                           setOpen(false);
@@ -96,12 +74,12 @@ export default function InviteTeamMember() {
                         <CheckIcon
                           className={cn(
                             'mr-2 h-4 w-4',
-                            value === framework.value
+                            value === role.value
                               ? 'opacity-100'
                               : 'opacity-0',
                           )}
                         />
-                        {framework.label}
+                        {role.label}
                       </CommandItem>
                     ))}
                   </CommandGroup>
