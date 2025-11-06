@@ -43,6 +43,7 @@ import {
 } from '@/components/animate-ui/primitives/base/collapsible';
 import { toast } from 'sonner';
 import TeamMembersSection from './TeamMembersSection';
+import Branch from './Branch';
 
 export default function Organization() {
   const {
@@ -757,6 +758,10 @@ export default function Organization() {
           )}
         </CardContent>
       </Card>
+
+      <div className='my-8'>
+        <Branch />
+      </div>
 
       <TeamMembersSection />
     </div>
